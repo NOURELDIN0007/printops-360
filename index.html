@@ -7,7 +7,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -123,6 +123,29 @@
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   input[type="number"] { -moz-appearance: textfield; }
   .num-tabular { font-variant-numeric: tabular-nums; }
+
+  /* Intro screen animations */
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(0.6); }
+    50%      { opacity: 1;    transform: scale(1.3); }
+  }
+  @keyframes drift {
+    0%   { transform: translateY(0) translateX(0); }
+    50%  { transform: translateY(-8px) translateX(4px); }
+    100% { transform: translateY(0) translateX(0); }
+  }
+  @keyframes introTitleIn {
+    0%   { opacity: 0; transform: translateY(14px) scale(0.96); letter-spacing: 0.18em; }
+    100% { opacity: 1; transform: translateY(0)    scale(1);    letter-spacing: 0.08em; }
+  }
+  @keyframes introSubIn {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 0.7; transform: translateY(0); }
+  }
+  @keyframes glowPulse {
+    0%, 100% { text-shadow: 0 0 24px rgba(244,196,48,0.35), 0 0 48px rgba(244,196,48,0.18); }
+    50%      { text-shadow: 0 0 36px rgba(244,196,48,0.55), 0 0 72px rgba(244,196,48,0.30); }
+  }
 </style>
 </head>
 <body>
@@ -1466,9 +1489,141 @@ function DocStat({ label, v, valueColor }) {
 }
 
 // ============================================================
+// INTRO SCREEN
+// ============================================================
+function IntroScreen({ onComplete }) {
+  const [fading, setFading] = useState(false);
+
+  // 95 sparkling stars at random positions/sizes/timings
+  const stars = useMemo(() => {
+    const arr = [];
+    for (let i = 0; i < 95; i++) {
+      arr.push({
+        id: i,
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        size: Math.random() * 2.5 + 1,
+        delay: Math.random() * 2.5,
+        duration: Math.random() * 1.8 + 1.4,
+        driftDur: Math.random() * 4 + 4,
+      });
+    }
+    return arr;
+  }, []);
+
+  // Auto-dismiss timing: title appears, holds, fades out → calls onComplete
+  useEffect(() => {
+    const t1 = setTimeout(() => setFading(true), 3400);
+    const t2 = setTimeout(() => onComplete(), 4100);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [onComplete]);
+
+  function skip() {
+    setFading(true);
+    setTimeout(onComplete, 600);
+  }
+
+  return (
+    <div
+      onClick={skip}
+      style={{
+        position: "fixed", inset: 0, zIndex: 100,
+        background: "radial-gradient(ellipse at center, #3D2817 0%, #2B1810 60%, #15080A 100%)",
+        opacity: fading ? 0 : 1,
+        transition: "opacity 0.7s ease-out",
+        cursor: "pointer",
+        overflow: "hidden",
+        userSelect: "none",
+      }}
+    >
+      {/* Sparkle field */}
+      {stars.map(s => (
+        <div
+          key={s.id}
+          style={{
+            position: "absolute",
+            top: `${s.top}%`, left: `${s.left}%`,
+            width: s.size, height: s.size,
+            borderRadius: "50%",
+            background: "#F4C430",
+            boxShadow: `0 0 ${s.size * 4}px ${s.size * 1.2}px rgba(244,196,48,0.55), 0 0 ${s.size * 8}px ${s.size}px rgba(255,215,0,0.25)`,
+            animation: `twinkle ${s.duration}s ease-in-out ${s.delay}s infinite, drift ${s.driftDur}s ease-in-out ${s.delay}s infinite`,
+            willChange: "transform, opacity",
+          }}
+        />
+      ))}
+
+      {/* A few larger "hero" stars with the classic 4-point sparkle look */}
+      {[
+        { top: 18, left: 12, size: 16 },
+        { top: 28, left: 82, size: 12 },
+        { top: 72, left: 18, size: 14 },
+        { top: 78, left: 78, size: 10 },
+        { top: 12, left: 50, size: 8 },
+      ].map((s, i) => (
+        <svg
+          key={`hero-${i}`}
+          width={s.size * 2} height={s.size * 2} viewBox="0 0 24 24"
+          style={{
+            position: "absolute",
+            top: `${s.top}%`, left: `${s.left}%`,
+            animation: `twinkle ${2.4 + i * 0.3}s ease-in-out ${i * 0.4}s infinite`,
+            filter: "drop-shadow(0 0 6px rgba(244,196,48,0.7))",
+          }}
+        >
+          <path d="M12 2 L13.5 10.5 L22 12 L13.5 13.5 L12 22 L10.5 13.5 L2 12 L10.5 10.5 Z" fill="#FFD700" />
+        </svg>
+      ))}
+
+      {/* Center title block */}
+      <div style={{
+        position: "absolute", inset: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexDirection: "column", gap: 18, padding: 24,
+      }}>
+        <div style={{
+          fontFamily: "'Cinzel', 'Playfair Display', Georgia, serif",
+          fontSize: "clamp(38px, 7.2vw, 86px)",
+          fontWeight: 900,
+          color: "#F5E6D3",
+          letterSpacing: "0.08em",
+          textAlign: "center",
+          lineHeight: 1.1,
+          animation: "introTitleIn 1.4s cubic-bezier(0.2,0.7,0.2,1) forwards, glowPulse 3s ease-in-out 1.4s infinite",
+          opacity: 0,
+        }}>
+          Noureldin Submission
+        </div>
+        <div style={{
+          fontFamily: "'Cinzel', serif",
+          fontSize: "clamp(11px, 1.2vw, 13px)",
+          color: "rgba(245,230,211,0)",
+          letterSpacing: "0.45em",
+          textTransform: "uppercase",
+          fontWeight: 600,
+          animation: "introSubIn 1s ease-out 1.6s forwards",
+        }}>
+          PrintOps 360 · Usability Submission
+        </div>
+        <div style={{
+          marginTop: 32,
+          fontSize: 11, color: "rgba(245,230,211,0.4)",
+          letterSpacing: "0.3em", textTransform: "uppercase",
+          animation: "introSubIn 1s ease-out 2.4s forwards",
+          opacity: 0,
+        }}>
+          tap anywhere to enter
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
 // APP SHELL
 // ============================================================
 function App() {
+  const [showIntro, setShowIntro] = useState(true);
   const [screen, setScreen] = useState("dashboard");
   const screens = {
     dashboard: <Dashboard onNavigate={setScreen} />,
@@ -1484,12 +1639,15 @@ function App() {
   };
 
   return (
-    <div className="flex h-full" style={{ background: "#FAF9F5" }} data-screen-label={labels[screen]}>
-      <Sidebar active={screen} onNavigate={setScreen} />
-      <main className="flex-1 overflow-auto scroll-hide" style={{ padding: 32 }}>
-        {screens[screen]}
-      </main>
-    </div>
+    <React.Fragment>
+      {showIntro && <IntroScreen onComplete={() => setShowIntro(false)} />}
+      <div className="flex h-full" style={{ background: "#FAF9F5" }} data-screen-label={labels[screen]}>
+        <Sidebar active={screen} onNavigate={setScreen} />
+        <main className="flex-1 overflow-auto scroll-hide" style={{ padding: 32 }}>
+          {screens[screen]}
+        </main>
+      </div>
+    </React.Fragment>
   );
 }
 
