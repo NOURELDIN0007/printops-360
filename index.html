@@ -112,7 +112,7 @@
   body {
     font-family: 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
     color: #111827;
-    background: #F9FAFB;
+    background: #FAF9F5;
     -webkit-font-smoothing: antialiased;
   }
   .card-shadow { box-shadow: 0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06); }
@@ -150,10 +150,10 @@ function Sidebar({ active, onNavigate }) {
     { id: "reports",    label: "Reports",           icon: I.FileText },
   ];
   return (
-    <aside style={{ width: 240, background: "#1E293B" }} className="flex-shrink-0 h-full flex flex-col text-slate-300">
+    <aside style={{ width: 240, background: "#262624" }} className="flex-shrink-0 h-full flex flex-col text-slate-300">
       <div className="px-5 pt-6 pb-5 border-b border-white/5">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "#2563EB" }}>
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "#D97757" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 18 L6 9 L12 5 L18 9 L18 18"/>
               <path d="M9 18 L9 13 L15 13 L15 18"/>
@@ -184,7 +184,7 @@ function Sidebar({ active, onNavigate }) {
               onMouseEnter={(e)=>{ if(!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
               onMouseLeave={(e)=>{ if(!isActive) e.currentTarget.style.background = "transparent"; }}
             >
-              {isActive && <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: "#2563EB" }} />}
+              {isActive && <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: "#D97757" }} />}
               <Ico size={18} strokeWidth={isActive ? 2.4 : 2} />
               <span>{it.label}</span>
             </button>
@@ -192,7 +192,7 @@ function Sidebar({ active, onNavigate }) {
         })}
       </nav>
       <div className="px-4 py-4 border-t border-white/5 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: "linear-gradient(135deg,#2563EB,#7C3AED)", fontSize: 14 }}>LM</div>
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: "linear-gradient(135deg,#D97757,#A8442C)", fontSize: 14 }}>LM</div>
         <div className="min-w-0">
           <div className="text-white font-semibold truncate" style={{ fontSize: 13 }}>Layla Mitchell</div>
           <div className="text-slate-400 truncate" style={{ fontSize: 11 }}>Owner</div>
@@ -232,7 +232,7 @@ function StatusPill({ kind }) {
     "Critical":     { bg: "#FEE2E2", fg: "#DC2626" },
     "Out of Stock": { bg: "#F3F4F6", fg: "#374151" },
     "Shipped":      { bg: "#DCFCE7", fg: "#16A34A" },
-    "In Progress":  { bg: "#DBEAFE", fg: "#1D4ED8" },
+    "In Progress":  { bg: "#F5DDCD", fg: "#C25E3F" },
     "Completed":    { bg: "#F3F4F6", fg: "#374151" },
   };
   const c = map[kind] || { bg: "#F3F4F6", fg: "#374151" };
@@ -244,23 +244,76 @@ function StatusPill({ kind }) {
 }
 
 // ---------- KPI Card ----------
-function KPI({ label, value, valueColor = "#111827", trend, trendKind, sub }) {
+function KPI({ label, value, valueColor = "#111827", trend, trendKind, sub, onClick }) {
   const I = window.LIcons;
   const trendColor = trendKind === "good" ? "#16A34A" : trendKind === "bad" ? "#DC2626" : "#6B7280";
+  const clickable = typeof onClick === "function";
   return (
-    <Card>
-      <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>{label}</div>
-      <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: valueColor, marginTop: 8, letterSpacing: -0.5 }}>{value}</div>
-      {trend && (
-        <div className="flex items-center gap-1 mt-2" style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>
-          {trendKind === "bad"
-            ? <I.TrendingUp size={14} />
-            : <I.TrendingUp size={14} />}
-          <span>{trend}</span>
-          {sub && <span style={{ color: "#6B7280", fontWeight: 500 }}>{sub}</span>}
+    <div
+      onClick={onClick}
+      style={{
+        cursor: clickable ? "pointer" : "default",
+        transition: "transform .15s, box-shadow .15s",
+      }}
+      onMouseEnter={(e) => { if (clickable) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(217,119,87,0.15)"; } }}
+      onMouseLeave={(e) => { if (clickable) { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; } }}
+    >
+      <Card>
+        <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>{label}</div>
+        <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: valueColor, marginTop: 8, letterSpacing: -0.5 }}>{value}</div>
+        {trend && (
+          <div className="flex items-center gap-1 mt-2" style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>
+            {trendKind === "bad"
+              ? <I.TrendingUp size={14} />
+              : <I.TrendingUp size={14} />}
+            <span>{trend}</span>
+            {sub && <span style={{ color: "#6B7280", fontWeight: 500 }}>{sub}</span>}
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+// ---------- Modal ----------
+function Modal({ open, onClose, title, subtitle, children, width = 560 }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open, onClose]);
+  if (!open) return null;
+  return (
+    <div
+      onClick={onClose}
+      style={{ position: "fixed", inset: 0, background: "rgba(38,38,36,0.55)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50, padding: 20, backdropFilter: "blur(2px)" }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ background: "white", borderRadius: 14, width: "100%", maxWidth: width, maxHeight: "85vh", overflow: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.25)", border: "1px solid #E5E7EB" }}
+      >
+        <div className="flex items-start justify-between" style={{ padding: "20px 24px", borderBottom: "1px solid #E5E7EB" }}>
+          <div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: "#111827" }}>{title}</div>
+            {subtitle && <div style={{ fontSize: 13, color: "#6B7280", marginTop: 2 }}>{subtitle}</div>}
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{ width: 32, height: 32, borderRadius: 8, color: "#6B7280", fontSize: 20, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#FAF9F5"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+          >×</button>
         </div>
-      )}
-    </Card>
+        <div style={{ padding: 20 }}>{children}</div>
+      </div>
+    </div>
   );
 }
 
@@ -269,6 +322,7 @@ function KPI({ label, value, valueColor = "#111827", trend, trendKind, sub }) {
 // ============================================================
 function Dashboard({ onNavigate }) {
   const I = window.LIcons;
+  const [modal, setModal] = useState(null); // 'alerts' | 'active' | 'all' | null
   const months = [
     { m: "Nov", rev: 3800, exp: 1700 },
     { m: "Dec", rev: 5200, exp: 2100 },
@@ -285,6 +339,40 @@ function Dashboard({ onNavigate }) {
     { id: "#1044", c: "James L.",  items: "Keychains (x5)",       total: 55.00,  status: "Completed",   date: "Apr 24" },
   ];
 
+  // Extended order list for "View All"
+  const allOrders = [
+    ...orders,
+    { id: "#1043", c: "Anna T.",   items: "Resin Coasters (x4)",  total: 64.00,  status: "Completed",   date: "Apr 23" },
+    { id: "#1042", c: "David W.",  items: "Custom Logo Stand",    total: 95.00,  status: "Completed",   date: "Apr 22" },
+    { id: "#1041", c: "Maya P.",   items: "Earring Set (x2)",     total: 30.00,  status: "Completed",   date: "Apr 21" },
+    { id: "#1040", c: "Carlos M.", items: "Wedding Favor Set",    total: 120.00, status: "Completed",   date: "Apr 20" },
+    { id: "#1039", c: "Jenna H.",  items: "Phone Grip (x2)",      total: 22.00,  status: "Completed",   date: "Apr 19" },
+    { id: "#1038", c: "Ryan B.",   items: "Resin Earrings (x5)",  total: 75.00,  status: "Completed",   date: "Apr 18" },
+  ];
+
+  // 12 active orders to match the KPI count
+  const activeOrders = [
+    { id: "#1046", c: "Mike R.",    items: "Wedding Favor Set",    total: 120.00, due: "May 1",  stage: "Printing"    },
+    { id: "#1045", c: "Priya D.",   items: "Custom Pendant",       total: 38.00,  due: "Apr 30", stage: "Printing"    },
+    { id: "#1048", c: "Tom V.",     items: "Resin Earrings (x4)",  total: 60.00,  due: "May 1",  stage: "Curing"      },
+    { id: "#1049", c: "Lisa C.",    items: "Phone Grip Set",       total: 28.00,  due: "May 2",  stage: "Queued"      },
+    { id: "#1050", c: "Hassan K.",  items: "Custom Keychains (x10)", total: 95.00, due: "May 2", stage: "Printing"    },
+    { id: "#1051", c: "Beth O.",    items: "Bridesmaid Set (x6)",  total: 215.00, due: "May 3",  stage: "Queued"      },
+    { id: "#1052", c: "Marco S.",   items: "Logo Pendant",         total: 42.00,  due: "May 3",  stage: "Queued"      },
+    { id: "#1053", c: "Ava P.",     items: "Resin Coaster Set",    total: 58.00,  due: "May 4",  stage: "Queued"      },
+    { id: "#1054", c: "Jordan F.",  items: "Custom Earrings (x2)", total: 35.00,  due: "May 4",  stage: "Queued"      },
+    { id: "#1055", c: "Nora E.",    items: "Wedding Topper",       total: 85.00,  due: "May 5",  stage: "Design"      },
+    { id: "#1056", c: "Sam W.",     items: "Phone Stand",          total: 22.00,  due: "May 5",  stage: "Queued"      },
+    { id: "#1057", c: "Eli R.",     items: "Resin Pendant (x3)",   total: 48.00,  due: "May 6",  stage: "Design"      },
+  ];
+
+  // Alerts (3 to match the badge count)
+  const alerts = [
+    { kind: "stock", severity: "Critical", title: "Clear Resin running out",       detail: "120ml remaining — below 200ml reorder point" },
+    { kind: "stock", severity: "Low",      title: "White PLA Filament low",        detail: "180g remaining — below 250g reorder point" },
+    { kind: "stock", severity: "Low",      title: "Gold Leaf Flakes low",          detail: "15 sheets remaining — below 20 reorder point" },
+  ];
+
   return (
     <div>
       <PageHeader
@@ -292,7 +380,13 @@ function Dashboard({ onNavigate }) {
         subtitle="Welcome back, Layla"
         right={
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-3 py-2 bg-white border" style={{ borderColor: "#E5E7EB", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "#374151" }}>
+            <button
+              onClick={() => setModal("alerts")}
+              className="flex items-center gap-2 px-3 py-2 bg-white border transition-colors"
+              style={{ borderColor: "#E5E7EB", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "#374151" }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#D97757"; e.currentTarget.style.color = "#D97757"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.color = "#374151"; }}
+            >
               <I.Bell size={15} /> Alerts <span style={{ background: "#FEE2E2", color: "#DC2626", fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 999 }}>3</span>
             </button>
             <div style={{ fontSize: 13, color: "#6B7280" }}>April 29, 2026</div>
@@ -302,10 +396,10 @@ function Dashboard({ onNavigate }) {
 
       {/* KPI row */}
       <div className="grid grid-cols-4 gap-5 mb-5">
-        <KPI label="Monthly Revenue"  value="$4,280" sub="" />
-        <KPI label="Monthly Expenses" value="$1,935" sub="" />
-        <KPI label="Net Profit"       value="$2,345" valueColor="#16A34A" />
-        <KPI label="Active Orders"    value="12"     valueColor="#2563EB" />
+        <KPI label="Monthly Revenue"  value="$4,280" sub="" onClick={() => onNavigate("analytics")} />
+        <KPI label="Monthly Expenses" value="$1,935" sub="" onClick={() => onNavigate("analytics")} />
+        <KPI label="Net Profit"       value="$2,345" valueColor="#16A34A" onClick={() => onNavigate("analytics")} />
+        <KPI label="Active Orders"    value="12"     valueColor="#D97757" onClick={() => setModal("active")} />
       </div>
 
       {/* Row 2 — chart + alerts */}
@@ -320,7 +414,7 @@ function Dashboard({ onNavigate }) {
             {months.map(m => (
               <div key={m.m} className="flex-1 flex flex-col items-center gap-2">
                 <div className="flex items-end gap-2 w-full justify-center" style={{ height: 200 }}>
-                  <div style={{ width: 18, height: `${(m.rev / maxV) * 100}%`, background: "#2563EB", borderRadius: "4px 4px 0 0" }} title={`Revenue ${fmtUSDInt(m.rev)}`} />
+                  <div style={{ width: 18, height: `${(m.rev / maxV) * 100}%`, background: "#D97757", borderRadius: "4px 4px 0 0" }} title={`Revenue ${fmtUSDInt(m.rev)}`} />
                   <div style={{ width: 18, height: `${(m.exp / maxV) * 100}%`, background: "#94A3B8", borderRadius: "4px 4px 0 0" }} title={`Expenses ${fmtUSDInt(m.exp)}`} />
                 </div>
                 <div style={{ fontSize: 12, color: "#6B7280", fontWeight: 500 }}>{m.m}</div>
@@ -329,7 +423,7 @@ function Dashboard({ onNavigate }) {
           </div>
           <div className="flex items-center gap-5 mt-4 pt-4 border-t" style={{ borderColor: "#E5E7EB" }}>
             <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#374151" }}>
-              <span style={{ width: 12, height: 12, background: "#2563EB", borderRadius: 3, display: "inline-block" }} /> Revenue
+              <span style={{ width: 12, height: 12, background: "#D97757", borderRadius: 3, display: "inline-block" }} /> Revenue
             </div>
             <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#374151" }}>
               <span style={{ width: 12, height: 12, background: "#94A3B8", borderRadius: 3, display: "inline-block" }} /> Expenses
@@ -348,7 +442,7 @@ function Dashboard({ onNavigate }) {
               { name: "White PLA Filament",  qty: "180g remaining",    pill: "Low" },
               { name: "Gold Leaf Flakes",    qty: "15 sheets remaining", pill: "Low" },
             ].map(r => (
-              <div key={r.name} className="flex items-center justify-between" style={{ padding: "12px 14px", background: "#F9FAFB", borderRadius: 10, border: "1px solid #E5E7EB" }}>
+              <div key={r.name} className="flex items-center justify-between" style={{ padding: "12px 14px", background: "#FAF9F5", borderRadius: 10, border: "1px solid #E5E7EB" }}>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{r.name}</div>
                   <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>{r.qty}</div>
@@ -360,7 +454,7 @@ function Dashboard({ onNavigate }) {
           <button
             onClick={() => onNavigate("inventory")}
             className="flex items-center gap-1 mt-4 pt-4 border-t w-full justify-end"
-            style={{ borderColor: "#E5E7EB", color: "#2563EB", fontSize: 13, fontWeight: 600 }}
+            style={{ borderColor: "#E5E7EB", color: "#D97757", fontSize: 13, fontWeight: 600 }}
           >
             View All Inventory <I.ArrowRight size={14} />
           </button>
@@ -371,11 +465,16 @@ function Dashboard({ onNavigate }) {
       <Card padding={0}>
         <div className="flex items-center justify-between" style={{ padding: "20px 24px 16px" }}>
           <div style={{ fontSize: 16, fontWeight: 600 }}>Recent Orders</div>
-          <button style={{ fontSize: 13, fontWeight: 600, color: "#2563EB" }}>View All</button>
+          <button
+            onClick={() => setModal("all")}
+            style={{ fontSize: 13, fontWeight: 600, color: "#D97757" }}
+            onMouseEnter={(e) => e.currentTarget.style.color = "#C25E3F"}
+            onMouseLeave={(e) => e.currentTarget.style.color = "#D97757"}
+          >View All</button>
         </div>
         <table className="w-full">
           <thead>
-            <tr style={{ background: "#F9FAFB", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
+            <tr style={{ background: "#FAF9F5", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
               {["Order ID","Customer","Items","Total","Status","Date"].map(h => (
                 <th key={h} style={{ textAlign: "left", padding: "12px 24px", fontSize: 12, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
               ))}
@@ -384,7 +483,7 @@ function Dashboard({ onNavigate }) {
           <tbody>
             {orders.map((o, i) => (
               <tr key={o.id} style={{ borderBottom: i < orders.length - 1 ? "1px solid #F3F4F6" : "none" }}>
-                <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 600, color: "#2563EB" }}>{o.id}</td>
+                <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 600, color: "#D97757" }}>{o.id}</td>
                 <td style={{ padding: "16px 24px", fontSize: 14 }}>{o.c}</td>
                 <td style={{ padding: "16px 24px", fontSize: 14, color: "#374151" }}>{o.items}</td>
                 <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 600 }} className="num-tabular">{fmtUSD(o.total)}</td>
@@ -395,6 +494,94 @@ function Dashboard({ onNavigate }) {
           </tbody>
         </table>
       </Card>
+
+      {/* Alerts Modal */}
+      <Modal open={modal === "alerts"} onClose={() => setModal(null)} title="Alerts" subtitle={`${alerts.length} items need your attention`} width={520}>
+        <div className="flex flex-col gap-3">
+          {alerts.map((a, i) => (
+            <div key={i} style={{ padding: 14, borderRadius: 10, border: "1px solid #E5E7EB", background: a.severity === "Critical" ? "#FEF2F2" : "#FFFBEB" }}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <I.AlertTriangle size={18} color={a.severity === "Critical" ? "#DC2626" : "#F59E0B"} />
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{a.title}</div>
+                    <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>{a.detail}</div>
+                  </div>
+                </div>
+                <StatusPill kind={a.severity} />
+              </div>
+              <div className="flex items-center gap-2 mt-3">
+                <button
+                  onClick={() => { setModal(null); onNavigate("inventory"); }}
+                  style={{ background: "#D97757", color: "white", fontSize: 12, fontWeight: 600, padding: "6px 12px", borderRadius: 6 }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "#C25E3F"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "#D97757"}
+                >Reorder Now</button>
+                <button
+                  onClick={() => setModal(null)}
+                  style={{ background: "white", color: "#374151", fontSize: 12, fontWeight: 600, padding: "6px 12px", borderRadius: 6, border: "1px solid #E5E7EB" }}
+                >Dismiss</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      {/* Active Orders Modal */}
+      <Modal open={modal === "active"} onClose={() => setModal(null)} title="Active Orders" subtitle={`${activeOrders.length} orders in progress`} width={760}>
+        <table className="w-full">
+          <thead>
+            <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+              {["Order","Customer","Items","Total","Stage","Due"].map(h => (
+                <th key={h} style={{ textAlign: "left", padding: "10px 12px", fontSize: 11, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {activeOrders.map((o, i) => (
+              <tr key={o.id} style={{ borderBottom: i < activeOrders.length - 1 ? "1px solid #F3F4F6" : "none" }}>
+                <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#D97757" }}>{o.id}</td>
+                <td style={{ padding: "12px", fontSize: 13 }}>{o.c}</td>
+                <td style={{ padding: "12px", fontSize: 13, color: "#374151" }}>{o.items}</td>
+                <td style={{ padding: "12px", fontSize: 13, fontWeight: 600 }} className="num-tabular">{fmtUSD(o.total)}</td>
+                <td style={{ padding: "12px" }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 999,
+                    background: o.stage === "Printing" ? "#F5DDCD" : o.stage === "Curing" ? "#FEF3C7" : o.stage === "Design" ? "#E0E7FF" : "#F3F4F6",
+                    color: o.stage === "Printing" ? "#C25E3F" : o.stage === "Curing" ? "#D97706" : o.stage === "Design" ? "#4338CA" : "#374151",
+                  }}>{o.stage}</span>
+                </td>
+                <td style={{ padding: "12px", fontSize: 13, color: "#6B7280" }}>{o.due}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Modal>
+
+      {/* All Recent Orders Modal */}
+      <Modal open={modal === "all"} onClose={() => setModal(null)} title="All Recent Orders" subtitle={`Last ${allOrders.length} orders`} width={760}>
+        <table className="w-full">
+          <thead>
+            <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+              {["Order ID","Customer","Items","Total","Status","Date"].map(h => (
+                <th key={h} style={{ textAlign: "left", padding: "10px 12px", fontSize: 11, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {allOrders.map((o, i) => (
+              <tr key={o.id} style={{ borderBottom: i < allOrders.length - 1 ? "1px solid #F3F4F6" : "none" }}>
+                <td style={{ padding: "12px", fontSize: 13, fontWeight: 600, color: "#D97757" }}>{o.id}</td>
+                <td style={{ padding: "12px", fontSize: 13 }}>{o.c}</td>
+                <td style={{ padding: "12px", fontSize: 13, color: "#374151" }}>{o.items}</td>
+                <td style={{ padding: "12px", fontSize: 13, fontWeight: 600 }} className="num-tabular">{fmtUSD(o.total)}</td>
+                <td style={{ padding: "12px" }}><StatusPill kind={o.status} /></td>
+                <td style={{ padding: "12px", fontSize: 13, color: "#6B7280" }}>{o.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Modal>
     </div>
   );
 }
@@ -605,7 +792,7 @@ function PricingCalculator() {
                 value={form.marginPct}
                 onChange={(e) => set("marginPct")(parseFloat(e.target.value))}
                 className="flex-1"
-                style={{ accentColor: "#2563EB" }}
+                style={{ accentColor: "#D97757" }}
               />
               <div style={{ width: 80 }}>
                 <Input value={form.marginPct} onChange={(v) => set("marginPct")(parseFloat(v) || 0)} placeholder="40" suffix="%" />
@@ -616,9 +803,9 @@ function PricingCalculator() {
           <button
             onClick={calculate}
             className="w-full mt-6 transition-colors"
-            style={{ background: "#2563EB", color: "white", borderRadius: 8, padding: "12px", fontSize: 14, fontWeight: 600 }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "#1D4ED8"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "#2563EB"}
+            style={{ background: "#D97757", color: "white", borderRadius: 8, padding: "12px", fontSize: 14, fontWeight: 600 }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#C25E3F"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#D97757"}
           >
             Calculate Price
           </button>
@@ -632,7 +819,7 @@ function PricingCalculator() {
               {result && <span style={{ fontSize: 11, fontWeight: 600, color: "#16A34A", background: "#DCFCE7", padding: "3px 9px", borderRadius: 999 }}>CALCULATED</span>}
             </div>
             {!result ? (
-              <div style={{ background: "#F9FAFB", border: "1px dashed #E5E7EB", borderRadius: 10, padding: "48px 20px", textAlign: "center", color: "#6B7280", fontSize: 14 }}>
+              <div style={{ background: "#FAF9F5", border: "1px dashed #E5E7EB", borderRadius: 10, padding: "48px 20px", textAlign: "center", color: "#6B7280", fontSize: 14 }}>
                 Enter your costs and click Calculate to see the breakdown.
               </div>
             ) : (
@@ -645,9 +832,9 @@ function PricingCalculator() {
                 <BreakRow label="Subtotal" v={result.subtotal} bold />
                 <BreakRow label="Platform Fees" v={result.platformFees} />
                 <BreakRow label="Total Cost" v={result.totalCost} bold last />
-                <div style={{ background: "#EFF6FF", borderRadius: 10, padding: 16, marginTop: 16 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: 0.6 }}>Suggested Selling Price</div>
-                  <div className="num-tabular" style={{ fontSize: 32, fontWeight: 700, color: "#2563EB", letterSpacing: -0.5, marginTop: 2 }}>{fmtUSD(result.sellingPrice)}</div>
+                <div style={{ background: "#FBF1EA", borderRadius: 10, padding: 16, marginTop: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#C25E3F", textTransform: "uppercase", letterSpacing: 0.6 }}>Suggested Selling Price</div>
+                  <div className="num-tabular" style={{ fontSize: 32, fontWeight: 700, color: "#D97757", letterSpacing: -0.5, marginTop: 2 }}>{fmtUSD(result.sellingPrice)}</div>
                 </div>
                 <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "12px 16px", marginTop: 10, color: "#15803D", fontSize: 14, fontWeight: 600 }} className="num-tabular flex justify-between">
                   <span>Your profit per unit</span><span>{fmtUSD(result.profit)}</span>
@@ -661,8 +848,8 @@ function PricingCalculator() {
             disabled={!result}
             className="w-full mt-4 flex items-center justify-center gap-2 transition-colors"
             style={{
-              border: "1px solid " + (result ? "#2563EB" : "#E5E7EB"),
-              color: result ? "#2563EB" : "#9CA3AF",
+              border: "1px solid " + (result ? "#D97757" : "#E5E7EB"),
+              color: result ? "#D97757" : "#9CA3AF",
               background: "white",
               borderRadius: 8, padding: "10px", fontSize: 14, fontWeight: 600,
               cursor: result ? "pointer" : "not-allowed"
@@ -680,7 +867,7 @@ function PricingCalculator() {
           <div style={{ padding: "20px 24px 16px", fontSize: 16, fontWeight: 600 }}>Saved Pricing History</div>
           <table className="w-full">
             <thead>
-              <tr style={{ background: "#F9FAFB", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
+              <tr style={{ background: "#FAF9F5", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
                 {["Product","Material","Cost","Price","Margin","Date"].map(h => (
                   <th key={h} style={{ textAlign: "left", padding: "12px 24px", fontSize: 12, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
                 ))}
@@ -692,7 +879,7 @@ function PricingCalculator() {
                   <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600 }}>{r.name}</td>
                   <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151" }}>{r.mat}</td>
                   <td style={{ padding: "14px 24px", fontSize: 14 }} className="num-tabular">{fmtUSD(r.cost)}</td>
-                  <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600, color: "#2563EB" }} className="num-tabular">{fmtUSD(r.price)}</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600, color: "#D97757" }} className="num-tabular">{fmtUSD(r.price)}</td>
                   <td style={{ padding: "14px 24px", fontSize: 14, color: "#16A34A", fontWeight: 600 }}>{r.margin}%</td>
                   <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B7280" }}>{r.date}</td>
                 </tr>
@@ -754,7 +941,7 @@ function Inventory() {
       <div className="grid grid-cols-3 gap-5 mb-5">
         <Card>
           <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Total Materials</div>
-          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#2563EB", marginTop: 8 }}>8</div>
+          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#D97757", marginTop: 8 }}>8</div>
           <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Across 3 categories</div>
         </Card>
         <Card>
@@ -772,7 +959,7 @@ function Inventory() {
       {/* Action bar */}
       <Card padding={0}>
         <div className="flex items-center gap-3" style={{ padding: "16px 20px", borderBottom: "1px solid #E5E7EB" }}>
-          <div className="flex items-center gap-2 flex-1" style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: 8, padding: "0 12px", height: 40, maxWidth: 360 }}>
+          <div className="flex items-center gap-2 flex-1" style={{ background: "#FAF9F5", border: "1px solid #E5E7EB", borderRadius: 8, padding: "0 12px", height: 40, maxWidth: 360 }}>
             <I.Search size={16} color="#6B7280" />
             <input
               value={q}
@@ -788,9 +975,9 @@ function Inventory() {
           <div className="flex-1" />
           <button
             className="flex items-center gap-2 transition-colors"
-            style={{ background: "#2563EB", color: "white", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "#1D4ED8"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "#2563EB"}
+            style={{ background: "#D97757", color: "white", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#C25E3F"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#D97757"}
           >
             <I.Plus size={16} /> Add Material
           </button>
@@ -798,7 +985,7 @@ function Inventory() {
 
         <table className="w-full">
           <thead>
-            <tr style={{ background: "#F9FAFB", borderBottom: "1px solid #E5E7EB" }}>
+            <tr style={{ background: "#FAF9F5", borderBottom: "1px solid #E5E7EB" }}>
               {["Material Name","Category","Quantity","Reorder Point","Status","Last Updated",""].map(h => (
                 <th key={h} style={{ textAlign: "left", padding: "12px 24px", fontSize: 12, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
               ))}
@@ -849,8 +1036,8 @@ function FinancialAnalytics() {
   const areaPath = linePath + ` L ${xAt(trend.length - 1)},${H - PADY} L ${xAt(0)},${H - PADY} Z`;
 
   const expenses = [
-    { name: "Materials",            v: 780, pct: 40, c: "#2563EB" },
-    { name: "Platform Fees",        v: 425, pct: 22, c: "#7C3AED" },
+    { name: "Materials",            v: 780, pct: 40, c: "#D97757" },
+    { name: "Platform Fees",        v: 425, pct: 22, c: "#A8442C" },
     { name: "Packaging & Shipping", v: 340, pct: 18, c: "#0D9488" },
     { name: "Electricity",          v: 190, pct: 10, c: "#F59E0B" },
     { name: "Tools & Supplies",     v: 120, pct: 6,  c: "#EC4899" },
@@ -912,7 +1099,7 @@ function FinancialAnalytics() {
             onClick={() => setPeriod(p)}
             style={{
               padding: "8px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600,
-              background: p === period ? "#2563EB" : "transparent",
+              background: p === period ? "#D97757" : "transparent",
               color: p === period ? "white" : "#374151",
               transition: "all .15s"
             }}
@@ -936,14 +1123,14 @@ function FinancialAnalytics() {
             <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>Last 6 months</div>
           </div>
           <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#374151" }}>
-            <span style={{ width: 10, height: 10, background: "#2563EB", borderRadius: 999 }} /> Revenue
+            <span style={{ width: 10, height: 10, background: "#D97757", borderRadius: 999 }} /> Revenue
           </div>
         </div>
         <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ height: 240 }}>
           <defs>
             <linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#2563EB" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#2563EB" stopOpacity="0" />
+              <stop offset="0%" stopColor="#D97757" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#D97757" stopOpacity="0" />
             </linearGradient>
           </defs>
           {/* gridlines */}
@@ -956,10 +1143,10 @@ function FinancialAnalytics() {
             <text key={val} x={PADX - 10} y={PADY + (i * (H - PADY*2) / 4) + 4} textAnchor="end" fontSize="10" fill="#9CA3AF">${(val/1000).toFixed(1)}k</text>
           ))}
           <path d={areaPath} fill="url(#areaFill)" />
-          <path d={linePath} fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+          <path d={linePath} fill="none" stroke="#D97757" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
           {trend.map((p, i) => (
             <g key={p.m}>
-              <circle cx={xAt(i)} cy={yAt(p.v)} r="5" fill="white" stroke="#2563EB" strokeWidth="2.5" />
+              <circle cx={xAt(i)} cy={yAt(p.v)} r="5" fill="white" stroke="#D97757" strokeWidth="2.5" />
               <text x={xAt(i)} y={H - 6} textAnchor="middle" fontSize="11" fill="#6B7280" fontWeight="500">{p.m}</text>
               <text x={xAt(i)} y={yAt(p.v) - 12} textAnchor="middle" fontSize="11" fill="#111827" fontWeight="600">${(p.v/1000).toFixed(1)}k</text>
             </g>
@@ -1009,7 +1196,7 @@ function FinancialAnalytics() {
                   <div className="num-tabular" style={{ fontSize: 13, fontWeight: 600 }}>${p.rev.toLocaleString()} <span style={{ color: "#9CA3AF", fontWeight: 500 }}>· {p.units}</span></div>
                 </div>
                 <div style={{ height: 8, background: "#F3F4F6", borderRadius: 999, overflow: "hidden" }}>
-                  <div style={{ height: "100%", width: `${(p.rev / maxRev) * 100}%`, background: "linear-gradient(90deg,#2563EB,#60A5FA)", borderRadius: 999, transition: "width .4s" }} />
+                  <div style={{ height: "100%", width: `${(p.rev / maxRev) * 100}%`, background: "linear-gradient(90deg,#D97757,#F0A584)", borderRadius: 999, transition: "width .4s" }} />
                 </div>
               </div>
             ))}
@@ -1083,7 +1270,7 @@ function Reports() {
               ["inventory","Inventory Summary"],
             ].map(([k, label]) => (
               <label key={k} className="flex items-center gap-2.5 cursor-pointer">
-                <input type="checkbox" checked={sections[k]} onChange={() => toggle(k)} style={{ accentColor: "#2563EB", width: 16, height: 16 }} />
+                <input type="checkbox" checked={sections[k]} onChange={() => toggle(k)} style={{ accentColor: "#D97757", width: 16, height: 16 }} />
                 <span style={{ fontSize: 14, color: "#374151" }}>{label}</span>
               </label>
             ))}
@@ -1093,7 +1280,7 @@ function Reports() {
           <div className="flex items-center gap-5">
             {["PDF","CSV","Print"].map(f => (
               <label key={f} className="flex items-center gap-2 cursor-pointer">
-                <input type="radio" name="fmt" checked={format === f} onChange={() => setFormat(f)} style={{ accentColor: "#2563EB", width: 16, height: 16 }} />
+                <input type="radio" name="fmt" checked={format === f} onChange={() => setFormat(f)} style={{ accentColor: "#D97757", width: 16, height: 16 }} />
                 <span style={{ fontSize: 14, color: "#374151" }}>{f}</span>
               </label>
             ))}
@@ -1102,9 +1289,9 @@ function Reports() {
           <button
             onClick={generate}
             className="w-full mt-6"
-            style={{ background: "#2563EB", color: "white", borderRadius: 8, padding: "12px", fontSize: 14, fontWeight: 600 }}
-            onMouseEnter={(e) => e.currentTarget.style.background = "#1D4ED8"}
-            onMouseLeave={(e) => e.currentTarget.style.background = "#2563EB"}
+            style={{ background: "#D97757", color: "white", borderRadius: 8, padding: "12px", fontSize: 14, fontWeight: 600 }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#C25E3F"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#D97757"}
           >
             Generate Report
           </button>
@@ -1119,7 +1306,7 @@ function Reports() {
             </div>
             <div style={{ padding: 24 }}>
               {!generated ? (
-                <div style={{ background: "#F9FAFB", border: "1px dashed #E5E7EB", borderRadius: 12, padding: "80px 24px", textAlign: "center" }}>
+                <div style={{ background: "#FAF9F5", border: "1px dashed #E5E7EB", borderRadius: 12, padding: "80px 24px", textAlign: "center" }}>
                   <div style={{ width: 56, height: 56, margin: "0 auto 16px", borderRadius: 12, background: "white", border: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <I.FileText size={26} color="#9CA3AF" />
                   </div>
@@ -1131,12 +1318,12 @@ function Reports() {
               )}
             </div>
             {generated && (
-              <div className="flex items-center gap-3" style={{ padding: "16px 24px", borderTop: "1px solid #E5E7EB", background: "#F9FAFB" }}>
+              <div className="flex items-center gap-3" style={{ padding: "16px 24px", borderTop: "1px solid #E5E7EB", background: "#FAF9F5" }}>
                 <button
                   className="flex items-center gap-2"
-                  style={{ background: "#2563EB", color: "white", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "#1D4ED8"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "#2563EB"}
+                  style={{ background: "#D97757", color: "white", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "#C25E3F"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "#D97757"}
                   onClick={() => {}}
                 >
                   <I.Download size={16} /> Download PDF
@@ -1144,7 +1331,7 @@ function Reports() {
                 <button
                   onClick={() => window.print && window.print()}
                   className="flex items-center gap-2"
-                  style={{ background: "white", color: "#2563EB", border: "1px solid #2563EB", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
+                  style={{ background: "white", color: "#D97757", border: "1px solid #D97757", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
                 >
                   <I.Printer size={16} /> Print Report
                 </button>
@@ -1160,7 +1347,7 @@ function Reports() {
           <div style={{ padding: "20px 24px 16px", fontSize: 16, fontWeight: 600 }}>Previously Generated Reports</div>
           <table className="w-full">
             <thead>
-              <tr style={{ background: "#F9FAFB", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
+              <tr style={{ background: "#FAF9F5", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
                 {["Report Name","Type","Period","Generated",""].map(h => (
                   <th key={h} style={{ textAlign: "left", padding: "12px 24px", fontSize: 12, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
                 ))}
@@ -1175,7 +1362,7 @@ function Reports() {
                   <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B7280" }}>{r.date}</td>
                   <td style={{ padding: "14px 24px", textAlign: "right" }}>
                     <div className="flex items-center gap-2 justify-end">
-                      <button className="flex items-center gap-1.5" style={{ fontSize: 13, fontWeight: 600, color: "#2563EB", padding: "6px 10px", borderRadius: 6, border: "1px solid #DBEAFE", background: "#EFF6FF" }}>
+                      <button className="flex items-center gap-1.5" style={{ fontSize: 13, fontWeight: 600, color: "#D97757", padding: "6px 10px", borderRadius: 6, border: "1px solid #F5DDCD", background: "#FBF1EA" }}>
                         <I.Download size={13} /> Download
                       </button>
                       <button className="flex items-center gap-1.5" style={{ fontSize: 13, fontWeight: 600, color: "#374151", padding: "6px 10px", borderRadius: 6, border: "1px solid #E5E7EB", background: "white" }}>
@@ -1196,7 +1383,7 @@ function Reports() {
 function ReportDoc({ type, sections }) {
   return (
     <div style={{ background: "white", border: "1px solid #E5E7EB", borderRadius: 8, padding: "32px 36px" }}>
-      <div style={{ borderBottom: "2px solid #2563EB", paddingBottom: 16, marginBottom: 20 }}>
+      <div style={{ borderBottom: "2px solid #D97757", paddingBottom: 16, marginBottom: 20 }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>PrintOps 360 — {type}</div>
         <div style={{ fontSize: 13, color: "#6B7280", marginTop: 4 }}>Period: April 1 – April 30, 2026</div>
         <div style={{ fontSize: 13, color: "#6B7280" }}>Generated: April 29, 2026</div>
@@ -1297,7 +1484,7 @@ function App() {
   };
 
   return (
-    <div className="flex h-full" style={{ background: "#F9FAFB" }} data-screen-label={labels[screen]}>
+    <div className="flex h-full" style={{ background: "#FAF9F5" }} data-screen-label={labels[screen]}>
       <Sidebar active={screen} onNavigate={setScreen} />
       <main className="flex-1 overflow-auto scroll-hide" style={{ padding: 32 }}>
         {screens[screen]}
