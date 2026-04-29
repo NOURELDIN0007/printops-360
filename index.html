@@ -1,0 +1,1314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PrintOps 360</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script>
+  // Inline SVG icon factory — avoids module/ESM resolution. Each icon component takes {size, color, strokeWidth}.
+  (function () {
+    function mk(paths) {
+      return function Ico(props) {
+        var size = (props && props.size) || 18;
+        var color = (props && props.color) || "currentColor";
+        var sw = (props && props.strokeWidth) || 2;
+        var style = (props && props.style) || {};
+        return React.createElement("svg", {
+          width: size, height: size, viewBox: "0 0 24 24",
+          fill: "none", stroke: color, strokeWidth: sw,
+          strokeLinecap: "round", strokeLinejoin: "round",
+          style: Object.assign({ display: "inline-block", flexShrink: 0 }, style)
+        }, paths.map(function (d, i) { return React.createElement("path", { key: i, d: d }); }));
+      };
+    }
+    function mkRaw(children) {
+      return function Ico(props) {
+        var size = (props && props.size) || 18;
+        var color = (props && props.color) || "currentColor";
+        var sw = (props && props.strokeWidth) || 2;
+        return React.createElement("svg", {
+          width: size, height: size, viewBox: "0 0 24 24",
+          fill: "none", stroke: color, strokeWidth: sw,
+          strokeLinecap: "round", strokeLinejoin: "round",
+          style: { display: "inline-block", flexShrink: 0 }
+        }, children.map(function (c, i) {
+          return React.createElement(c.tag, Object.assign({ key: i }, c.attrs));
+        }));
+      };
+    }
+    window.LIcons = {
+      LayoutDashboard: mkRaw([
+        { tag: "rect", attrs: { x: 3, y: 3, width: 7, height: 9, rx: 1 } },
+        { tag: "rect", attrs: { x: 14, y: 3, width: 7, height: 5, rx: 1 } },
+        { tag: "rect", attrs: { x: 14, y: 12, width: 7, height: 9, rx: 1 } },
+        { tag: "rect", attrs: { x: 3, y: 16, width: 7, height: 5, rx: 1 } },
+      ]),
+      Calculator: mkRaw([
+        { tag: "rect", attrs: { x: 4, y: 2, width: 16, height: 20, rx: 2 } },
+        { tag: "line", attrs: { x1: 8, y1: 6, x2: 16, y2: 6 } },
+        { tag: "line", attrs: { x1: 8, y1: 14, x2: 8, y2: 14 } },
+        { tag: "line", attrs: { x1: 12, y1: 14, x2: 12, y2: 14 } },
+        { tag: "line", attrs: { x1: 16, y1: 14, x2: 16, y2: 14 } },
+        { tag: "line", attrs: { x1: 8, y1: 18, x2: 8, y2: 18 } },
+        { tag: "line", attrs: { x1: 12, y1: 18, x2: 12, y2: 18 } },
+        { tag: "line", attrs: { x1: 16, y1: 18, x2: 16, y2: 18 } },
+      ]),
+      Package: mk([
+        "M16.5 9.4 7.55 4.24",
+        "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z",
+        "M3.27 6.96 12 12.01l8.73-5.05",
+        "M12 22.08V12",
+      ]),
+      LineChart: mk([ "M3 3v18h18", "m7 14 4-4 4 4 5-6" ]),
+      FileText: mk([
+        "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z",
+        "M14 2v6h6", "M16 13H8", "M16 17H8", "M10 9H8",
+      ]),
+      Search: mkRaw([
+        { tag: "circle", attrs: { cx: 11, cy: 11, r: 8 } },
+        { tag: "line", attrs: { x1: 21, y1: 21, x2: 16.65, y2: 16.65 } },
+      ]),
+      Plus: mk([ "M12 5v14", "M5 12h14" ]),
+      MoreHorizontal: mkRaw([
+        { tag: "circle", attrs: { cx: 12, cy: 12, r: 1 } },
+        { tag: "circle", attrs: { cx: 19, cy: 12, r: 1 } },
+        { tag: "circle", attrs: { cx: 5, cy: 12, r: 1 } },
+      ]),
+      AlertTriangle: mk([
+        "M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z",
+        "M12 9v4", "M12 17h.01",
+      ]),
+      ArrowRight: mk([ "M5 12h14", "m12 5 7 7-7 7" ]),
+      ChevronDown: mk([ "m6 9 6 6 6-6" ]),
+      TrendingUp: mk([ "m22 7-8.5 8.5-5-5L2 17", "M16 7h6v6" ]),
+      TrendingDown: mk([ "m22 17-8.5-8.5-5 5L2 7", "M16 17h6v-6" ]),
+      Download: mk([ "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", "m7 10 5 5 5-5", "M12 15V3" ]),
+      Printer: mk([
+        "M6 9V2h12v7",
+        "M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2",
+        "M6 14h12v8H6z",
+      ]),
+      Save: mk([
+        "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z",
+        "M17 21v-8H7v8", "M7 3v5h8",
+      ]),
+      Bell: mk([
+        "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9",
+        "M10.3 21a1.94 1.94 0 0 0 3.4 0",
+      ]),
+      Filter: mk([ "M22 3H2l8 9.46V19l4 2v-8.54L22 3z" ]),
+    };
+  })();
+</script>
+<style>
+  html, body, #root { height: 100%; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+    color: #111827;
+    background: #F9FAFB;
+    -webkit-font-smoothing: antialiased;
+  }
+  .card-shadow { box-shadow: 0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06); }
+  .nav-item-active { background: rgba(255,255,255,0.06); }
+  .scroll-hide::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scroll-hide::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 8px; }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; }
+  .num-tabular { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useMemo, useEffect, useRef } = React;
+
+function bootWhenReady(render) { render(); }
+
+// ---------- Helpers ----------
+const fmtUSD = (n, dp = 2) =>
+  "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
+const fmtUSDInt = (n) =>
+  "$" + Math.round(Number(n)).toLocaleString("en-US");
+
+// ---------- Sidebar ----------
+function Sidebar({ active, onNavigate }) {
+  const I = window.LIcons;
+  const items = [
+    { id: "dashboard",  label: "Dashboard",         icon: I.LayoutDashboard },
+    { id: "pricing",    label: "Pricing Calculator",icon: I.Calculator },
+    { id: "inventory",  label: "Inventory",         icon: I.Package },
+    { id: "analytics",  label: "Financial Analytics", icon: I.LineChart },
+    { id: "reports",    label: "Reports",           icon: I.FileText },
+  ];
+  return (
+    <aside style={{ width: 240, background: "#1E293B" }} className="flex-shrink-0 h-full flex flex-col text-slate-300">
+      <div className="px-5 pt-6 pb-5 border-b border-white/5">
+        <div className="flex items-center gap-2">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "#2563EB" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 18 L6 9 L12 5 L18 9 L18 18"/>
+              <path d="M9 18 L9 13 L15 13 L15 18"/>
+            </svg>
+          </div>
+          <div>
+            <div className="text-white font-bold leading-tight" style={{ fontSize: 18 }}>PrintOps 360</div>
+            <div className="text-slate-400 leading-tight" style={{ fontSize: 11 }}>3D Print Business Suite</div>
+          </div>
+        </div>
+      </div>
+      <nav className="flex-1 py-3">
+        {items.map(it => {
+          const isActive = it.id === active;
+          const Ico = it.icon;
+          return (
+            <button
+              key={it.id}
+              onClick={() => onNavigate(it.id)}
+              className="w-full flex items-center gap-3 pl-5 pr-4 relative text-left transition-colors"
+              style={{
+                height: 48,
+                color: isActive ? "#FFFFFF" : "#CBD5E1",
+                background: isActive ? "rgba(255,255,255,0.06)" : "transparent",
+                fontWeight: isActive ? 700 : 500,
+                fontSize: 14,
+              }}
+              onMouseEnter={(e)=>{ if(!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}
+              onMouseLeave={(e)=>{ if(!isActive) e.currentTarget.style.background = "transparent"; }}
+            >
+              {isActive && <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: "#2563EB" }} />}
+              <Ico size={18} strokeWidth={isActive ? 2.4 : 2} />
+              <span>{it.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+      <div className="px-4 py-4 border-t border-white/5 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: "linear-gradient(135deg,#2563EB,#7C3AED)", fontSize: 14 }}>LM</div>
+        <div className="min-w-0">
+          <div className="text-white font-semibold truncate" style={{ fontSize: 13 }}>Layla Mitchell</div>
+          <div className="text-slate-400 truncate" style={{ fontSize: 11 }}>Owner</div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+// ---------- Page header ----------
+function PageHeader({ title, subtitle, right }) {
+  return (
+    <div className="flex items-end justify-between mb-6">
+      <div>
+        <h1 className="font-semibold tracking-tight" style={{ fontSize: 24, color: "#111827" }}>{title}</h1>
+        {subtitle && <div style={{ fontSize: 14, color: "#6B7280", marginTop: 4 }}>{subtitle}</div>}
+      </div>
+      {right}
+    </div>
+  );
+}
+
+// ---------- Card ----------
+function Card({ children, className = "", style = {}, padding = 24 }) {
+  return (
+    <div className={"bg-white card-shadow " + className} style={{ borderRadius: 12, padding, border: "1px solid #E5E7EB", ...style }}>
+      {children}
+    </div>
+  );
+}
+
+// ---------- Status pill ----------
+function StatusPill({ kind }) {
+  const map = {
+    "In Stock":     { bg: "#DCFCE7", fg: "#16A34A" },
+    "Low":          { bg: "#FEF3C7", fg: "#D97706" },
+    "Critical":     { bg: "#FEE2E2", fg: "#DC2626" },
+    "Out of Stock": { bg: "#F3F4F6", fg: "#374151" },
+    "Shipped":      { bg: "#DCFCE7", fg: "#16A34A" },
+    "In Progress":  { bg: "#DBEAFE", fg: "#1D4ED8" },
+    "Completed":    { bg: "#F3F4F6", fg: "#374151" },
+  };
+  const c = map[kind] || { bg: "#F3F4F6", fg: "#374151" };
+  return (
+    <span style={{ background: c.bg, color: c.fg, fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 999, display: "inline-flex", alignItems: "center" }}>
+      {kind}
+    </span>
+  );
+}
+
+// ---------- KPI Card ----------
+function KPI({ label, value, valueColor = "#111827", trend, trendKind, sub }) {
+  const I = window.LIcons;
+  const trendColor = trendKind === "good" ? "#16A34A" : trendKind === "bad" ? "#DC2626" : "#6B7280";
+  return (
+    <Card>
+      <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>{label}</div>
+      <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: valueColor, marginTop: 8, letterSpacing: -0.5 }}>{value}</div>
+      {trend && (
+        <div className="flex items-center gap-1 mt-2" style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>
+          {trendKind === "bad"
+            ? <I.TrendingUp size={14} />
+            : <I.TrendingUp size={14} />}
+          <span>{trend}</span>
+          {sub && <span style={{ color: "#6B7280", fontWeight: 500 }}>{sub}</span>}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+// ============================================================
+// SCREEN 1 — DASHBOARD
+// ============================================================
+function Dashboard({ onNavigate }) {
+  const I = window.LIcons;
+  const months = [
+    { m: "Nov", rev: 3800, exp: 1700 },
+    { m: "Dec", rev: 5200, exp: 2100 },
+    { m: "Jan", rev: 3400, exp: 1600 },
+    { m: "Feb", rev: 3900, exp: 1800 },
+    { m: "Mar", rev: 4100, exp: 1900 },
+    { m: "Apr", rev: 4280, exp: 1935 },
+  ];
+  const maxV = Math.max(...months.map(x => Math.max(x.rev, x.exp)));
+  const orders = [
+    { id: "#1047", c: "Sarah K.",  items: "Resin Earrings (x3)",  total: 45.00,  status: "Shipped",     date: "Apr 27" },
+    { id: "#1046", c: "Mike R.",   items: "Wedding Favor Set",    total: 120.00, status: "In Progress", date: "Apr 26" },
+    { id: "#1045", c: "Priya D.",  items: "Custom Pendant",       total: 38.00,  status: "In Progress", date: "Apr 25" },
+    { id: "#1044", c: "James L.",  items: "Keychains (x5)",       total: 55.00,  status: "Completed",   date: "Apr 24" },
+  ];
+
+  return (
+    <div>
+      <PageHeader
+        title="Dashboard"
+        subtitle="Welcome back, Layla"
+        right={
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-2 px-3 py-2 bg-white border" style={{ borderColor: "#E5E7EB", borderRadius: 8, fontSize: 13, fontWeight: 600, color: "#374151" }}>
+              <I.Bell size={15} /> Alerts <span style={{ background: "#FEE2E2", color: "#DC2626", fontSize: 11, fontWeight: 700, padding: "1px 7px", borderRadius: 999 }}>3</span>
+            </button>
+            <div style={{ fontSize: 13, color: "#6B7280" }}>April 29, 2026</div>
+          </div>
+        }
+      />
+
+      {/* KPI row */}
+      <div className="grid grid-cols-4 gap-5 mb-5">
+        <KPI label="Monthly Revenue"  value="$4,280" sub="" />
+        <KPI label="Monthly Expenses" value="$1,935" sub="" />
+        <KPI label="Net Profit"       value="$2,345" valueColor="#16A34A" />
+        <KPI label="Active Orders"    value="12"     valueColor="#2563EB" />
+      </div>
+
+      {/* Row 2 — chart + alerts */}
+      <div className="grid gap-5 mb-5" style={{ gridTemplateColumns: "60% 40%" }}>
+        <Card>
+          <div className="flex items-center justify-between mb-1">
+            <div style={{ fontSize: 16, fontWeight: 600 }}>Revenue vs Expenses</div>
+            <div style={{ fontSize: 12, color: "#6B7280" }}>Last 6 months</div>
+          </div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginBottom: 16 }}>Monthly performance</div>
+          <div style={{ height: 240 }} className="flex items-end gap-6 px-2">
+            {months.map(m => (
+              <div key={m.m} className="flex-1 flex flex-col items-center gap-2">
+                <div className="flex items-end gap-2 w-full justify-center" style={{ height: 200 }}>
+                  <div style={{ width: 18, height: `${(m.rev / maxV) * 100}%`, background: "#2563EB", borderRadius: "4px 4px 0 0" }} title={`Revenue ${fmtUSDInt(m.rev)}`} />
+                  <div style={{ width: 18, height: `${(m.exp / maxV) * 100}%`, background: "#94A3B8", borderRadius: "4px 4px 0 0" }} title={`Expenses ${fmtUSDInt(m.exp)}`} />
+                </div>
+                <div style={{ fontSize: 12, color: "#6B7280", fontWeight: 500 }}>{m.m}</div>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-5 mt-4 pt-4 border-t" style={{ borderColor: "#E5E7EB" }}>
+            <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#374151" }}>
+              <span style={{ width: 12, height: 12, background: "#2563EB", borderRadius: 3, display: "inline-block" }} /> Revenue
+            </div>
+            <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#374151" }}>
+              <span style={{ width: 12, height: 12, background: "#94A3B8", borderRadius: 3, display: "inline-block" }} /> Expenses
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <div style={{ fontSize: 16, fontWeight: 600 }}>Low Stock Alerts</div>
+            <I.AlertTriangle size={18} color="#F59E0B" />
+          </div>
+          <div className="flex flex-col gap-3">
+            {[
+              { name: "Clear Resin",         qty: "120ml remaining",   pill: "Critical" },
+              { name: "White PLA Filament",  qty: "180g remaining",    pill: "Low" },
+              { name: "Gold Leaf Flakes",    qty: "15 sheets remaining", pill: "Low" },
+            ].map(r => (
+              <div key={r.name} className="flex items-center justify-between" style={{ padding: "12px 14px", background: "#F9FAFB", borderRadius: 10, border: "1px solid #E5E7EB" }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{r.name}</div>
+                  <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>{r.qty}</div>
+                </div>
+                <StatusPill kind={r.pill} />
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => onNavigate("inventory")}
+            className="flex items-center gap-1 mt-4 pt-4 border-t w-full justify-end"
+            style={{ borderColor: "#E5E7EB", color: "#2563EB", fontSize: 13, fontWeight: 600 }}
+          >
+            View All Inventory <I.ArrowRight size={14} />
+          </button>
+        </Card>
+      </div>
+
+      {/* Row 3 — Recent orders */}
+      <Card padding={0}>
+        <div className="flex items-center justify-between" style={{ padding: "20px 24px 16px" }}>
+          <div style={{ fontSize: 16, fontWeight: 600 }}>Recent Orders</div>
+          <button style={{ fontSize: 13, fontWeight: 600, color: "#2563EB" }}>View All</button>
+        </div>
+        <table className="w-full">
+          <thead>
+            <tr style={{ background: "#F9FAFB", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
+              {["Order ID","Customer","Items","Total","Status","Date"].map(h => (
+                <th key={h} style={{ textAlign: "left", padding: "12px 24px", fontSize: 12, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((o, i) => (
+              <tr key={o.id} style={{ borderBottom: i < orders.length - 1 ? "1px solid #F3F4F6" : "none" }}>
+                <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 600, color: "#2563EB" }}>{o.id}</td>
+                <td style={{ padding: "16px 24px", fontSize: 14 }}>{o.c}</td>
+                <td style={{ padding: "16px 24px", fontSize: 14, color: "#374151" }}>{o.items}</td>
+                <td style={{ padding: "16px 24px", fontSize: 14, fontWeight: 600 }} className="num-tabular">{fmtUSD(o.total)}</td>
+                <td style={{ padding: "16px 24px" }}><StatusPill kind={o.status} /></td>
+                <td style={{ padding: "16px 24px", fontSize: 14, color: "#6B7280" }}>{o.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+// ============================================================
+// SCREEN 2 — PRICING CALCULATOR
+// ============================================================
+const MATERIAL_TYPES = ["UV Resin", "PLA Filament", "ABS Filament", "PETG Filament", "Flexible TPU"];
+
+function FormField({ label, children, hint }) {
+  return (
+    <label className="block">
+      <div style={{ fontSize: 13, fontWeight: 500, color: "#374151", marginBottom: 6 }}>{label}</div>
+      {children}
+      {hint && <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 4 }}>{hint}</div>}
+    </label>
+  );
+}
+
+function Input({ value, onChange, placeholder, type = "number", step = "any", prefix, suffix }) {
+  return (
+    <div className="flex items-center" style={{ background: "white", border: "1px solid #E5E7EB", borderRadius: 8, height: 40 }}>
+      {prefix && <span style={{ paddingLeft: 12, color: "#6B7280", fontSize: 14 }}>{prefix}</span>}
+      <input
+        type={type}
+        step={step}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="flex-1 px-3 outline-none num-tabular"
+        style={{ fontSize: 14, height: "100%", background: "transparent", color: "#111827", borderRadius: 8 }}
+      />
+      {suffix && <span style={{ paddingRight: 12, color: "#6B7280", fontSize: 13 }}>{suffix}</span>}
+    </div>
+  );
+}
+
+function Select({ value, onChange, options }) {
+  const I = window.LIcons;
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full appearance-none outline-none"
+        style={{ height: 40, padding: "0 36px 0 12px", border: "1px solid #E5E7EB", borderRadius: 8, fontSize: 14, background: "white", color: "#111827" }}
+      >
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+      <I.ChevronDown size={16} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#6B7280" }} />
+    </div>
+  );
+}
+
+function SectionTitle({ children }) {
+  return <div style={{ fontSize: 14, fontWeight: 700, color: "#111827", textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 14 }}>{children}</div>;
+}
+
+function PricingCalculator() {
+  const I = window.LIcons;
+  const [form, setForm] = useState({
+    material: "UV Resin",
+    used: "", costPerKgL: "",
+    printTime: "", elecRate: "", power: "", printerCost: "", lifespan: "",
+    laborTime: "", hourlyRate: "", packaging: "", feesPct: "",
+    marginPct: 40,
+  });
+
+  const placeholders = {
+    used: "25", costPerKgL: "45.00",
+    printTime: "2.5", elecRate: "0.12", power: "200", printerCost: "800", lifespan: "5000",
+    laborTime: "0.5", hourlyRate: "20.00", packaging: "1.50", feesPct: "6.5",
+  };
+
+  const set = (k) => (v) => setForm(s => ({ ...s, [k]: v }));
+
+  const [result, setResult] = useState(null);
+  const resultRef = useRef(null);
+
+  function num(v, fallback) {
+    if (v === "" || v == null || isNaN(parseFloat(v))) return parseFloat(fallback);
+    return parseFloat(v);
+  }
+
+  function calculate() {
+    const used = num(form.used, placeholders.used);
+    const costPerKgL = num(form.costPerKgL, placeholders.costPerKgL);
+    const printTime = num(form.printTime, placeholders.printTime);
+    const elecRate = num(form.elecRate, placeholders.elecRate);
+    const power = num(form.power, placeholders.power);
+    const printerCost = num(form.printerCost, placeholders.printerCost);
+    const lifespan = num(form.lifespan, placeholders.lifespan);
+    const laborTime = num(form.laborTime, placeholders.laborTime);
+    const hourlyRate = num(form.hourlyRate, placeholders.hourlyRate);
+    const packaging = num(form.packaging, placeholders.packaging);
+    const feesPct = num(form.feesPct, placeholders.feesPct);
+    const marginPct = num(form.marginPct, 40);
+
+    const materialCost   = (used / 1000) * costPerKgL;
+    const electricityCost = (printTime * power / 1000) * elecRate;
+    const printerDeprec  = (printerCost / lifespan) * printTime;
+    const laborCost      = laborTime * hourlyRate;
+    const subtotal       = materialCost + electricityCost + printerDeprec + laborCost + packaging;
+    const platformFees   = subtotal * (feesPct / 100);
+    const totalCost      = subtotal + platformFees;
+    const profit         = totalCost * (marginPct / 100);
+    const sellingPrice   = totalCost + profit;
+
+    setResult({
+      material: form.material,
+      materialCost, electricityCost, printerDeprec, laborCost, packaging,
+      subtotal, platformFees, totalCost, profit, sellingPrice, marginPct
+    });
+  }
+
+  const [history, setHistory] = useState([
+    { name: "Resin Earrings",         mat: "UV Resin",     cost: 13.09, price: 23.43, margin: 40, date: "Apr 20" },
+    { name: "Wedding Favor (Single)", mat: "UV Resin",     cost: 8.75,  price: 15.31, margin: 40, date: "Apr 18" },
+    { name: "Custom Keychain",        mat: "PLA Filament", cost: 5.20,  price: 8.84,  margin: 35, date: "Apr 15" },
+  ]);
+
+  const [savedToast, setSavedToast] = useState(false);
+  function saveHistory() {
+    if (!result) return;
+    const date = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    setHistory(h => [
+      { name: `Custom ${result.material} Item`, mat: result.material, cost: result.totalCost, price: result.sellingPrice, margin: result.marginPct, date },
+      ...h
+    ]);
+    setSavedToast(true);
+    setTimeout(() => setSavedToast(false), 2000);
+  }
+
+  return (
+    <div>
+      <PageHeader title="Pricing Calculator" subtitle="Calculate the true cost and selling price of your products" />
+
+      <div className="grid gap-5" style={{ gridTemplateColumns: "55% 45%" }}>
+        {/* LEFT — input form */}
+        <Card>
+          {/* Material Costs */}
+          <SectionTitle>Material Costs</SectionTitle>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="col-span-2">
+              <FormField label="Material Type">
+                <Select value={form.material} onChange={set("material")} options={MATERIAL_TYPES} />
+              </FormField>
+            </div>
+            <FormField label="Material Used" hint="grams or milliliters">
+              <Input value={form.used} onChange={set("used")} placeholder={placeholders.used} suffix="g/ml" />
+            </FormField>
+            <FormField label="Material Cost per kg/L" hint="bulk price">
+              <Input value={form.costPerKgL} onChange={set("costPerKgL")} placeholder={placeholders.costPerKgL} prefix="$" />
+            </FormField>
+          </div>
+
+          <div style={{ height: 1, background: "#F3F4F6", margin: "4px 0 20px" }} />
+
+          {/* Machine Costs */}
+          <SectionTitle>Machine Costs</SectionTitle>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <FormField label="Print Time (hours)">
+              <Input value={form.printTime} onChange={set("printTime")} placeholder={placeholders.printTime} suffix="hrs" />
+            </FormField>
+            <FormField label="Electricity Rate ($/kWh)">
+              <Input value={form.elecRate} onChange={set("elecRate")} placeholder={placeholders.elecRate} prefix="$" />
+            </FormField>
+            <FormField label="Printer Power (watts)">
+              <Input value={form.power} onChange={set("power")} placeholder={placeholders.power} suffix="W" />
+            </FormField>
+            <FormField label="Printer Cost ($)">
+              <Input value={form.printerCost} onChange={set("printerCost")} placeholder={placeholders.printerCost} prefix="$" />
+            </FormField>
+            <div className="col-span-2">
+              <FormField label="Expected Printer Lifespan (hours)">
+                <Input value={form.lifespan} onChange={set("lifespan")} placeholder={placeholders.lifespan} suffix="hrs" />
+              </FormField>
+            </div>
+          </div>
+
+          <div style={{ height: 1, background: "#F3F4F6", margin: "4px 0 20px" }} />
+
+          {/* Labor & Overhead */}
+          <SectionTitle>Labor &amp; Overhead</SectionTitle>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <FormField label="Labor Time (hours)">
+              <Input value={form.laborTime} onChange={set("laborTime")} placeholder={placeholders.laborTime} suffix="hrs" />
+            </FormField>
+            <FormField label="Hourly Rate ($)">
+              <Input value={form.hourlyRate} onChange={set("hourlyRate")} placeholder={placeholders.hourlyRate} prefix="$" />
+            </FormField>
+            <FormField label="Packaging Cost ($)">
+              <Input value={form.packaging} onChange={set("packaging")} placeholder={placeholders.packaging} prefix="$" />
+            </FormField>
+            <FormField label="Platform Fees (%)">
+              <Input value={form.feesPct} onChange={set("feesPct")} placeholder={placeholders.feesPct} suffix="%" />
+            </FormField>
+          </div>
+
+          <div style={{ height: 1, background: "#F3F4F6", margin: "4px 0 20px" }} />
+
+          {/* Profit */}
+          <SectionTitle>Profit</SectionTitle>
+          <FormField label={`Desired Profit Margin: ${form.marginPct}%`}>
+            <div className="flex items-center gap-4">
+              <input
+                type="range" min="0" max="100" step="1"
+                value={form.marginPct}
+                onChange={(e) => set("marginPct")(parseFloat(e.target.value))}
+                className="flex-1"
+                style={{ accentColor: "#2563EB" }}
+              />
+              <div style={{ width: 80 }}>
+                <Input value={form.marginPct} onChange={(v) => set("marginPct")(parseFloat(v) || 0)} placeholder="40" suffix="%" />
+              </div>
+            </div>
+          </FormField>
+
+          <button
+            onClick={calculate}
+            className="w-full mt-6 transition-colors"
+            style={{ background: "#2563EB", color: "white", borderRadius: 8, padding: "12px", fontSize: 14, fontWeight: 600 }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#1D4ED8"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#2563EB"}
+          >
+            Calculate Price
+          </button>
+        </Card>
+
+        {/* RIGHT — breakdown */}
+        <div ref={resultRef}>
+          <Card>
+            <div className="flex items-center justify-between mb-5">
+              <div style={{ fontSize: 16, fontWeight: 600 }}>Price Breakdown</div>
+              {result && <span style={{ fontSize: 11, fontWeight: 600, color: "#16A34A", background: "#DCFCE7", padding: "3px 9px", borderRadius: 999 }}>CALCULATED</span>}
+            </div>
+            {!result ? (
+              <div style={{ background: "#F9FAFB", border: "1px dashed #E5E7EB", borderRadius: 10, padding: "48px 20px", textAlign: "center", color: "#6B7280", fontSize: 14 }}>
+                Enter your costs and click Calculate to see the breakdown.
+              </div>
+            ) : (
+              <div>
+                <BreakRow label="Material Cost" v={result.materialCost} />
+                <BreakRow label="Electricity Cost" v={result.electricityCost} />
+                <BreakRow label="Printer Depreciation" v={result.printerDeprec} />
+                <BreakRow label="Labor Cost" v={result.laborCost} />
+                <BreakRow label="Packaging" v={result.packaging} />
+                <BreakRow label="Subtotal" v={result.subtotal} bold />
+                <BreakRow label="Platform Fees" v={result.platformFees} />
+                <BreakRow label="Total Cost" v={result.totalCost} bold last />
+                <div style={{ background: "#EFF6FF", borderRadius: 10, padding: 16, marginTop: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#1D4ED8", textTransform: "uppercase", letterSpacing: 0.6 }}>Suggested Selling Price</div>
+                  <div className="num-tabular" style={{ fontSize: 32, fontWeight: 700, color: "#2563EB", letterSpacing: -0.5, marginTop: 2 }}>{fmtUSD(result.sellingPrice)}</div>
+                </div>
+                <div style={{ background: "#F0FDF4", borderRadius: 10, padding: "12px 16px", marginTop: 10, color: "#15803D", fontSize: 14, fontWeight: 600 }} className="num-tabular flex justify-between">
+                  <span>Your profit per unit</span><span>{fmtUSD(result.profit)}</span>
+                </div>
+              </div>
+            )}
+          </Card>
+
+          <button
+            onClick={saveHistory}
+            disabled={!result}
+            className="w-full mt-4 flex items-center justify-center gap-2 transition-colors"
+            style={{
+              border: "1px solid " + (result ? "#2563EB" : "#E5E7EB"),
+              color: result ? "#2563EB" : "#9CA3AF",
+              background: "white",
+              borderRadius: 8, padding: "10px", fontSize: 14, fontWeight: 600,
+              cursor: result ? "pointer" : "not-allowed"
+            }}
+          >
+            <I.Save size={16} /> Save to Pricing History
+          </button>
+          {savedToast && <div style={{ marginTop: 10, fontSize: 13, color: "#16A34A", textAlign: "center", fontWeight: 600 }}>✓ Saved to history</div>}
+        </div>
+      </div>
+
+      {/* History */}
+      <div className="mt-6">
+        <Card padding={0}>
+          <div style={{ padding: "20px 24px 16px", fontSize: 16, fontWeight: 600 }}>Saved Pricing History</div>
+          <table className="w-full">
+            <thead>
+              <tr style={{ background: "#F9FAFB", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
+                {["Product","Material","Cost","Price","Margin","Date"].map(h => (
+                  <th key={h} style={{ textAlign: "left", padding: "12px 24px", fontSize: 12, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((r, i) => (
+                <tr key={i} style={{ borderBottom: i < history.length - 1 ? "1px solid #F3F4F6" : "none" }}>
+                  <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600 }}>{r.name}</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151" }}>{r.mat}</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14 }} className="num-tabular">{fmtUSD(r.cost)}</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600, color: "#2563EB" }} className="num-tabular">{fmtUSD(r.price)}</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14, color: "#16A34A", fontWeight: 600 }}>{r.margin}%</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B7280" }}>{r.date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function BreakRow({ label, v, bold, last }) {
+  return (
+    <div className="flex items-center justify-between" style={{
+      padding: "10px 0",
+      borderBottom: last ? "none" : "1px solid #F3F4F6",
+      fontWeight: bold ? 700 : 500,
+      fontSize: 14,
+      color: bold ? "#111827" : "#374151"
+    }}>
+      <span>{label}</span>
+      <span className="num-tabular">{fmtUSD(v)}</span>
+    </div>
+  );
+}
+
+// ============================================================
+// SCREEN 3 — INVENTORY
+// ============================================================
+const INVENTORY = [
+  { name: "UV Resin (Clear)",       cat: "Resin",       qty: 120, unit: "ml",     reorder: 200, status: "Critical",     date: "Apr 28" },
+  { name: "UV Resin (White)",       cat: "Resin",       qty: 450, unit: "ml",     reorder: 200, status: "In Stock",     date: "Apr 28" },
+  { name: "UV Resin (Black)",       cat: "Resin",       qty: 0,   unit: "ml",     reorder: 200, status: "Out of Stock", date: "Apr 25" },
+  { name: "PLA Filament (White)",   cat: "Filament",    qty: 180, unit: "g",      reorder: 250, status: "Low",          date: "Apr 27" },
+  { name: "PLA Filament (Black)",   cat: "Filament",    qty: 820, unit: "g",      reorder: 250, status: "In Stock",     date: "Apr 28" },
+  { name: "PETG Filament (Clear)",  cat: "Filament",    qty: 650, unit: "g",      reorder: 250, status: "In Stock",     date: "Apr 27" },
+  { name: "Gold Leaf Flakes",       cat: "Accessories", qty: 15,  unit: "sheets", reorder: 20,  status: "Low",          date: "Apr 26" },
+  { name: "Jewelry Hooks (Silver)", cat: "Accessories", qty: 145, unit: "pcs",    reorder: 50,  status: "In Stock",     date: "Apr 28" },
+];
+
+function Inventory() {
+  const I = window.LIcons;
+  const [q, setQ] = useState("");
+  const [cat, setCat] = useState("All Categories");
+
+  const filtered = useMemo(() => {
+    return INVENTORY.filter(r =>
+      (cat === "All Categories" || r.cat === cat) &&
+      (q.trim() === "" || r.name.toLowerCase().includes(q.toLowerCase()) || r.cat.toLowerCase().includes(q.toLowerCase()))
+    );
+  }, [q, cat]);
+
+  return (
+    <div>
+      <PageHeader title="Inventory Tracking" subtitle="Monitor your material stock in real time" />
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-3 gap-5 mb-5">
+        <Card>
+          <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Total Materials</div>
+          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#2563EB", marginTop: 8 }}>8</div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Across 3 categories</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Low Stock Items</div>
+          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#F59E0B", marginTop: 8 }}>2</div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Below reorder point</div>
+        </Card>
+        <Card>
+          <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Out of Stock</div>
+          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#DC2626", marginTop: 8 }}>1</div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Needs immediate reorder</div>
+        </Card>
+      </div>
+
+      {/* Action bar */}
+      <Card padding={0}>
+        <div className="flex items-center gap-3" style={{ padding: "16px 20px", borderBottom: "1px solid #E5E7EB" }}>
+          <div className="flex items-center gap-2 flex-1" style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: 8, padding: "0 12px", height: 40, maxWidth: 360 }}>
+            <I.Search size={16} color="#6B7280" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search materials..."
+              className="flex-1 outline-none bg-transparent"
+              style={{ fontSize: 14, height: "100%", color: "#111827" }}
+            />
+          </div>
+          <div style={{ width: 200 }}>
+            <Select value={cat} onChange={setCat} options={["All Categories","Resin","Filament","Accessories"]} />
+          </div>
+          <div className="flex-1" />
+          <button
+            className="flex items-center gap-2 transition-colors"
+            style={{ background: "#2563EB", color: "white", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#1D4ED8"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#2563EB"}
+          >
+            <I.Plus size={16} /> Add Material
+          </button>
+        </div>
+
+        <table className="w-full">
+          <thead>
+            <tr style={{ background: "#F9FAFB", borderBottom: "1px solid #E5E7EB" }}>
+              {["Material Name","Category","Quantity","Reorder Point","Status","Last Updated",""].map(h => (
+                <th key={h} style={{ textAlign: "left", padding: "12px 24px", fontSize: 12, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((r, i) => (
+              <tr key={r.name} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #F3F4F6" : "none" }}>
+                <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600, color: "#111827" }}>{r.name}</td>
+                <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151" }}>{r.cat}</td>
+                <td style={{ padding: "14px 24px", fontSize: 14, color: r.qty === 0 ? "#DC2626" : "#111827", fontWeight: 600 }} className="num-tabular">{r.qty} {r.unit}</td>
+                <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B7280" }} className="num-tabular">{r.reorder} {r.unit}</td>
+                <td style={{ padding: "14px 24px" }}><StatusPill kind={r.status} /></td>
+                <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B7280" }}>{r.date}</td>
+                <td style={{ padding: "14px 24px", textAlign: "right" }}>
+                  <button style={{ width: 28, height: 28, borderRadius: 6, color: "#6B7280" }}><I.MoreHorizontal size={18} /></button>
+                </td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr><td colSpan="7" style={{ padding: "40px 24px", textAlign: "center", color: "#6B7280", fontSize: 14 }}>No materials match your filters.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  );
+}
+
+// ============================================================
+// SCREEN 4 — FINANCIAL ANALYTICS
+// ============================================================
+function FinancialAnalytics() {
+  const I = window.LIcons;
+  const [period, setPeriod] = useState("Monthly");
+
+  const trend = [
+    { m: "Nov", v: 3800 }, { m: "Dec", v: 5200 }, { m: "Jan", v: 3400 },
+    { m: "Feb", v: 3900 }, { m: "Mar", v: 4100 }, { m: "Apr", v: 4280 },
+  ];
+
+  // Build SVG path for the line chart
+  const W = 760, H = 220, PADX = 40, PADY = 24;
+  const minV = 3000, maxV = 5400;
+  const xAt = (i) => PADX + (i * (W - PADX * 2)) / (trend.length - 1);
+  const yAt = (v) => PADY + (1 - (v - minV) / (maxV - minV)) * (H - PADY * 2);
+  const linePath = trend.map((p, i) => (i === 0 ? "M" : "L") + xAt(i) + "," + yAt(p.v)).join(" ");
+  const areaPath = linePath + ` L ${xAt(trend.length - 1)},${H - PADY} L ${xAt(0)},${H - PADY} Z`;
+
+  const expenses = [
+    { name: "Materials",            v: 780, pct: 40, c: "#2563EB" },
+    { name: "Platform Fees",        v: 425, pct: 22, c: "#7C3AED" },
+    { name: "Packaging & Shipping", v: 340, pct: 18, c: "#0D9488" },
+    { name: "Electricity",          v: 190, pct: 10, c: "#F59E0B" },
+    { name: "Tools & Supplies",     v: 120, pct: 6,  c: "#EC4899" },
+    { name: "Other",                v: 80,  pct: 4,  c: "#9CA3AF" },
+  ];
+  const totalExp = expenses.reduce((s, e) => s + e.v, 0);
+
+  // Donut math
+  let cum = 0;
+  const donutR = 70, donutCx = 100, donutCy = 100, stroke = 24;
+  const arcs = expenses.map((e, i) => {
+    const start = cum;
+    cum += e.pct / 100;
+    const end = cum;
+    const a0 = start * Math.PI * 2 - Math.PI / 2;
+    const a1 = end * Math.PI * 2 - Math.PI / 2;
+    const large = end - start > 0.5 ? 1 : 0;
+    const x0 = donutCx + donutR * Math.cos(a0);
+    const y0 = donutCy + donutR * Math.sin(a0);
+    const x1 = donutCx + donutR * Math.cos(a1);
+    const y1 = donutCy + donutR * Math.sin(a1);
+    return `M${x0},${y0} A${donutR},${donutR} 0 ${large} 1 ${x1},${y1}`;
+  });
+
+  const products = [
+    { name: "Resin Earrings",     rev: 1420, units: "68 units" },
+    { name: "Wedding Favor Sets", rev: 960,  units: "8 sets"   },
+    { name: "Custom Pendants",    rev: 840,  units: "22 units" },
+    { name: "Keychains",          rev: 620,  units: "31 units" },
+    { name: "Phone Grips",        rev: 440,  units: "22 units" },
+  ];
+  const maxRev = Math.max(...products.map(p => p.rev));
+
+  function KPIWithTrend({ label, value, delta, kind }) {
+    const ico = kind === "bad"
+      ? <I.TrendingUp size={14} />
+      : <I.TrendingUp size={14} />;
+    const color = kind === "bad" ? "#DC2626" : "#16A34A";
+    return (
+      <Card>
+        <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>{label}</div>
+        <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, marginTop: 8, letterSpacing: -0.5 }}>{value}</div>
+        <div className="flex items-center gap-1 mt-2" style={{ fontSize: 12, color, fontWeight: 600 }}>
+          {ico} <span>{delta}</span> <span style={{ color: "#6B7280", fontWeight: 500 }}>vs last month</span>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <div>
+      <PageHeader title="Financial Analytics" subtitle="Track your business performance over time" />
+
+      {/* Period tabs */}
+      <div className="flex items-center gap-1 mb-5" style={{ background: "white", border: "1px solid #E5E7EB", borderRadius: 10, padding: 4, width: "fit-content" }}>
+        {["Daily","Weekly","Monthly"].map(p => (
+          <button
+            key={p}
+            onClick={() => setPeriod(p)}
+            style={{
+              padding: "8px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600,
+              background: p === period ? "#2563EB" : "transparent",
+              color: p === period ? "white" : "#374151",
+              transition: "all .15s"
+            }}
+          >{p}</button>
+        ))}
+      </div>
+
+      {/* KPI row */}
+      <div className="grid grid-cols-4 gap-5 mb-5">
+        <KPIWithTrend label="Total Revenue"  value="$4,280"  delta="↑ 12%"  kind="good" />
+        <KPIWithTrend label="Total Expenses" value="$1,935"  delta="↑ 3%"   kind="bad" />
+        <KPIWithTrend label="Net Profit"     value="$2,345"  delta="↑ 18%"  kind="good" />
+        <KPIWithTrend label="Profit Margin"  value="54.8%"   delta="↑ 2.1%" kind="good" />
+      </div>
+
+      {/* Revenue trend */}
+      <Card>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>Revenue Trend</div>
+            <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>Last 6 months</div>
+          </div>
+          <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#374151" }}>
+            <span style={{ width: 10, height: 10, background: "#2563EB", borderRadius: 999 }} /> Revenue
+          </div>
+        </div>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ height: 240 }}>
+          <defs>
+            <linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#2563EB" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#2563EB" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {/* gridlines */}
+          {[0, 0.25, 0.5, 0.75, 1].map((g, i) => {
+            const y = PADY + g * (H - PADY * 2);
+            return <line key={i} x1={PADX} x2={W - PADX} y1={y} y2={y} stroke="#F3F4F6" strokeWidth="1" />;
+          })}
+          {/* y-axis labels */}
+          {[5400, 4800, 4200, 3600, 3000].map((val, i) => (
+            <text key={val} x={PADX - 10} y={PADY + (i * (H - PADY*2) / 4) + 4} textAnchor="end" fontSize="10" fill="#9CA3AF">${(val/1000).toFixed(1)}k</text>
+          ))}
+          <path d={areaPath} fill="url(#areaFill)" />
+          <path d={linePath} fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+          {trend.map((p, i) => (
+            <g key={p.m}>
+              <circle cx={xAt(i)} cy={yAt(p.v)} r="5" fill="white" stroke="#2563EB" strokeWidth="2.5" />
+              <text x={xAt(i)} y={H - 6} textAnchor="middle" fontSize="11" fill="#6B7280" fontWeight="500">{p.m}</text>
+              <text x={xAt(i)} y={yAt(p.v) - 12} textAnchor="middle" fontSize="11" fill="#111827" fontWeight="600">${(p.v/1000).toFixed(1)}k</text>
+            </g>
+          ))}
+        </svg>
+      </Card>
+
+      {/* Bottom row */}
+      <div className="grid grid-cols-2 gap-5 mt-5">
+        {/* Donut */}
+        <Card>
+          <div style={{ fontSize: 16, fontWeight: 600 }}>Expense Breakdown</div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2, marginBottom: 16 }}>April 2026</div>
+          <div className="flex items-center gap-6">
+            <svg width="200" height="200" viewBox="0 0 200 200" style={{ flexShrink: 0 }}>
+              {arcs.map((d, i) => (
+                <path key={i} d={d} fill="none" stroke={expenses[i].c} strokeWidth={stroke} strokeLinecap="butt" />
+              ))}
+              <text x="100" y="94" textAnchor="middle" fontSize="11" fill="#6B7280" fontWeight="500">Total</text>
+              <text x="100" y="118" textAnchor="middle" fontSize="22" fontWeight="700" fill="#111827">${totalExp.toLocaleString()}</text>
+            </svg>
+            <div className="flex-1 flex flex-col gap-2">
+              {expenses.map(e => (
+                <div key={e.name} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span style={{ width: 10, height: 10, background: e.c, borderRadius: 3, display: "inline-block" }} />
+                    <span style={{ fontSize: 13, color: "#374151" }}>{e.name}</span>
+                  </div>
+                  <div className="num-tabular" style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>
+                    ${e.v} <span style={{ color: "#9CA3AF", fontWeight: 500 }}>({e.pct}%)</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+
+        {/* Top products */}
+        <Card>
+          <div style={{ fontSize: 16, fontWeight: 600 }}>Top Products</div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2, marginBottom: 16 }}>April 2026 — by revenue</div>
+          <div className="flex flex-col gap-4">
+            {products.map(p => (
+              <div key={p.name}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{p.name}</div>
+                  <div className="num-tabular" style={{ fontSize: 13, fontWeight: 600 }}>${p.rev.toLocaleString()} <span style={{ color: "#9CA3AF", fontWeight: 500 }}>· {p.units}</span></div>
+                </div>
+                <div style={{ height: 8, background: "#F3F4F6", borderRadius: 999, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${(p.rev / maxRev) * 100}%`, background: "linear-gradient(90deg,#2563EB,#60A5FA)", borderRadius: 999, transition: "width .4s" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================
+// SCREEN 5 — REPORTS
+// ============================================================
+function Reports() {
+  const I = window.LIcons;
+  const [type, setType] = useState("Monthly Revenue Summary");
+  const [from, setFrom] = useState("2026-04-01");
+  const [to, setTo]     = useState("2026-04-30");
+  const [sections, setSections] = useState({
+    revenue: true, expenses: true, profit: true, products: true, inventory: true
+  });
+  const [format, setFormat] = useState("PDF");
+  const [generated, setGenerated] = useState(false);
+
+  function toggle(k) { setSections(s => ({ ...s, [k]: !s[k] })); }
+
+  function generate() {
+    setGenerated(true);
+    if (format === "Print") setTimeout(() => window.print && window.print(), 300);
+  }
+
+  const prevReports = [
+    { name: "March 2026 Revenue Summary", t: "Monthly Revenue", range: "Mar 1–31",       date: "Mar 31, 2026" },
+    { name: "Q1 2026 Profit & Loss",      t: "Profit & Loss",   range: "Jan 1 – Mar 31", date: "Apr 1, 2026"  },
+    { name: "February Expense Breakdown", t: "Expense Breakdown", range: "Feb 1–28",     date: "Feb 28, 2026" },
+  ];
+
+  return (
+    <div>
+      <PageHeader title="Financial Reports" subtitle="Generate and export reports for your records" />
+
+      <div className="grid gap-5" style={{ gridTemplateColumns: "40% 60%" }}>
+        {/* LEFT — config */}
+        <Card>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 18 }}>Generate a Report</div>
+
+          <FormField label="Report Type">
+            <Select value={type} onChange={setType} options={["Monthly Revenue Summary","Expense Breakdown","Profit & Loss","Cost per Product"]} />
+          </FormField>
+
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            <FormField label="From">
+              <input type="date" value={from} onChange={(e) => setFrom(e.target.value)}
+                className="w-full outline-none num-tabular"
+                style={{ height: 40, padding: "0 12px", border: "1px solid #E5E7EB", borderRadius: 8, fontSize: 14, background: "white", color: "#111827" }} />
+            </FormField>
+            <FormField label="To">
+              <input type="date" value={to} onChange={(e) => setTo(e.target.value)}
+                className="w-full outline-none num-tabular"
+                style={{ height: 40, padding: "0 12px", border: "1px solid #E5E7EB", borderRadius: 8, fontSize: 14, background: "white", color: "#111827" }} />
+            </FormField>
+          </div>
+
+          <div style={{ fontSize: 13, fontWeight: 500, color: "#374151", margin: "20px 0 10px" }}>Include Sections</div>
+          <div className="flex flex-col gap-2.5">
+            {[
+              ["revenue",  "Revenue Overview"],
+              ["expenses", "Expense Breakdown"],
+              ["profit",   "Profit Summary"],
+              ["products", "Top Products"],
+              ["inventory","Inventory Summary"],
+            ].map(([k, label]) => (
+              <label key={k} className="flex items-center gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={sections[k]} onChange={() => toggle(k)} style={{ accentColor: "#2563EB", width: 16, height: 16 }} />
+                <span style={{ fontSize: 14, color: "#374151" }}>{label}</span>
+              </label>
+            ))}
+          </div>
+
+          <div style={{ fontSize: 13, fontWeight: 500, color: "#374151", margin: "20px 0 10px" }}>Format</div>
+          <div className="flex items-center gap-5">
+            {["PDF","CSV","Print"].map(f => (
+              <label key={f} className="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="fmt" checked={format === f} onChange={() => setFormat(f)} style={{ accentColor: "#2563EB", width: 16, height: 16 }} />
+                <span style={{ fontSize: 14, color: "#374151" }}>{f}</span>
+              </label>
+            ))}
+          </div>
+
+          <button
+            onClick={generate}
+            className="w-full mt-6"
+            style={{ background: "#2563EB", color: "white", borderRadius: 8, padding: "12px", fontSize: 14, fontWeight: 600 }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#1D4ED8"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#2563EB"}
+          >
+            Generate Report
+          </button>
+        </Card>
+
+        {/* RIGHT — preview */}
+        <div>
+          <Card padding={0}>
+            <div className="flex items-center justify-between" style={{ padding: "20px 24px", borderBottom: "1px solid #E5E7EB" }}>
+              <div style={{ fontSize: 16, fontWeight: 600 }}>Report Preview</div>
+              {generated && <span style={{ fontSize: 11, fontWeight: 600, color: "#16A34A", background: "#DCFCE7", padding: "3px 9px", borderRadius: 999 }}>READY</span>}
+            </div>
+            <div style={{ padding: 24 }}>
+              {!generated ? (
+                <div style={{ background: "#F9FAFB", border: "1px dashed #E5E7EB", borderRadius: 12, padding: "80px 24px", textAlign: "center" }}>
+                  <div style={{ width: 56, height: 56, margin: "0 auto 16px", borderRadius: 12, background: "white", border: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <I.FileText size={26} color="#9CA3AF" />
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#374151" }}>No report generated yet</div>
+                  <div style={{ fontSize: 13, color: "#6B7280", marginTop: 4 }}>Configure your options on the left and click Generate Report.</div>
+                </div>
+              ) : (
+                <ReportDoc type={type} sections={sections} />
+              )}
+            </div>
+            {generated && (
+              <div className="flex items-center gap-3" style={{ padding: "16px 24px", borderTop: "1px solid #E5E7EB", background: "#F9FAFB" }}>
+                <button
+                  className="flex items-center gap-2"
+                  style={{ background: "#2563EB", color: "white", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "#1D4ED8"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "#2563EB"}
+                  onClick={() => {}}
+                >
+                  <I.Download size={16} /> Download PDF
+                </button>
+                <button
+                  onClick={() => window.print && window.print()}
+                  className="flex items-center gap-2"
+                  style={{ background: "white", color: "#2563EB", border: "1px solid #2563EB", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
+                >
+                  <I.Printer size={16} /> Print Report
+                </button>
+              </div>
+            )}
+          </Card>
+        </div>
+      </div>
+
+      {/* Previously generated */}
+      <div className="mt-6">
+        <Card padding={0}>
+          <div style={{ padding: "20px 24px 16px", fontSize: 16, fontWeight: 600 }}>Previously Generated Reports</div>
+          <table className="w-full">
+            <thead>
+              <tr style={{ background: "#F9FAFB", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB" }}>
+                {["Report Name","Type","Period","Generated",""].map(h => (
+                  <th key={h} style={{ textAlign: "left", padding: "12px 24px", fontSize: 12, fontWeight: 600, color: "#6B7280", textTransform: "uppercase", letterSpacing: 0.4 }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {prevReports.map((r, i) => (
+                <tr key={r.name} style={{ borderBottom: i < prevReports.length - 1 ? "1px solid #F3F4F6" : "none" }}>
+                  <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600 }}>{r.name}</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151" }}>{r.t}</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B7280" }}>{r.range}</td>
+                  <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B7280" }}>{r.date}</td>
+                  <td style={{ padding: "14px 24px", textAlign: "right" }}>
+                    <div className="flex items-center gap-2 justify-end">
+                      <button className="flex items-center gap-1.5" style={{ fontSize: 13, fontWeight: 600, color: "#2563EB", padding: "6px 10px", borderRadius: 6, border: "1px solid #DBEAFE", background: "#EFF6FF" }}>
+                        <I.Download size={13} /> Download
+                      </button>
+                      <button className="flex items-center gap-1.5" style={{ fontSize: 13, fontWeight: 600, color: "#374151", padding: "6px 10px", borderRadius: 6, border: "1px solid #E5E7EB", background: "white" }}>
+                        View
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function ReportDoc({ type, sections }) {
+  return (
+    <div style={{ background: "white", border: "1px solid #E5E7EB", borderRadius: 8, padding: "32px 36px" }}>
+      <div style={{ borderBottom: "2px solid #2563EB", paddingBottom: 16, marginBottom: 20 }}>
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>PrintOps 360 — {type}</div>
+        <div style={{ fontSize: 13, color: "#6B7280", marginTop: 4 }}>Period: April 1 – April 30, 2026</div>
+        <div style={{ fontSize: 13, color: "#6B7280" }}>Generated: April 29, 2026</div>
+      </div>
+
+      {sections.revenue && (
+        <DocSection title="Revenue Overview">
+          <DocStat label="Total Revenue" v="$4,280" />
+          <DocStat label="Orders" v="42" />
+          <DocStat label="Avg Order Value" v="$101.90" />
+        </DocSection>
+      )}
+
+      {sections.expenses && (
+        <DocSection title="Expense Summary">
+          <DocStat label="Total Expenses" v="$1,935" />
+          <DocStat label="Largest Category" v="Materials ($780)" />
+        </DocSection>
+      )}
+
+      {sections.profit && (
+        <DocSection title="Profit Summary">
+          <DocStat label="Net Profit" v="$2,345" valueColor="#16A34A" />
+          <DocStat label="Profit Margin" v="54.8%" valueColor="#16A34A" />
+        </DocSection>
+      )}
+
+      {sections.products && (
+        <DocSection title="Top Products">
+          <table className="w-full" style={{ borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #E5E7EB" }}>
+                <th style={{ textAlign: "left", padding: "8px 0", fontSize: 12, color: "#6B7280", fontWeight: 600 }}>Product</th>
+                <th style={{ textAlign: "right", padding: "8px 0", fontSize: 12, color: "#6B7280", fontWeight: 600 }}>Units</th>
+                <th style={{ textAlign: "right", padding: "8px 0", fontSize: 12, color: "#6B7280", fontWeight: 600 }}>Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["Resin Earrings", 68, "$1,420"],
+                ["Wedding Favor Sets", 8, "$960"],
+                ["Custom Pendants", 22, "$840"],
+              ].map(([n, u, r]) => (
+                <tr key={n} style={{ borderBottom: "1px solid #F3F4F6" }}>
+                  <td style={{ padding: "8px 0", fontSize: 13 }}>{n}</td>
+                  <td style={{ padding: "8px 0", fontSize: 13, textAlign: "right" }} className="num-tabular">{u}</td>
+                  <td style={{ padding: "8px 0", fontSize: 13, textAlign: "right", fontWeight: 600 }} className="num-tabular">{r}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </DocSection>
+      )}
+
+      {sections.inventory && (
+        <DocSection title="Inventory Summary">
+          <DocStat label="Total Materials" v="8 SKUs" />
+          <DocStat label="Low Stock" v="2 items" valueColor="#F59E0B" />
+          <DocStat label="Out of Stock" v="1 item" valueColor="#DC2626" />
+        </DocSection>
+      )}
+    </div>
+  );
+}
+function DocSection({ title, children }) {
+  return (
+    <div style={{ marginBottom: 18 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 10 }}>{title}</div>
+      <div className="flex flex-col gap-1.5">{children}</div>
+    </div>
+  );
+}
+function DocStat({ label, v, valueColor }) {
+  return (
+    <div className="flex items-center justify-between" style={{ padding: "6px 0" }}>
+      <span style={{ fontSize: 13, color: "#374151" }}>{label}</span>
+      <span className="num-tabular" style={{ fontSize: 14, fontWeight: 600, color: valueColor || "#111827" }}>{v}</span>
+    </div>
+  );
+}
+
+// ============================================================
+// APP SHELL
+// ============================================================
+function App() {
+  const [screen, setScreen] = useState("dashboard");
+  const screens = {
+    dashboard: <Dashboard onNavigate={setScreen} />,
+    pricing:   <PricingCalculator />,
+    inventory: <Inventory />,
+    analytics: <FinancialAnalytics />,
+    reports:   <Reports />,
+  };
+  const labels = {
+    dashboard: "01 Dashboard", pricing: "02 Pricing Calculator",
+    inventory: "03 Inventory", analytics: "04 Financial Analytics",
+    reports: "05 Reports"
+  };
+
+  return (
+    <div className="flex h-full" style={{ background: "#F9FAFB" }} data-screen-label={labels[screen]}>
+      <Sidebar active={screen} onNavigate={setScreen} />
+      <main className="flex-1 overflow-auto scroll-hide" style={{ padding: 32 }}>
+        {screens[screen]}
+      </main>
+    </div>
+  );
+}
+
+bootWhenReady(() => {
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+});
+</script>
+</body>
+</html>
