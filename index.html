@@ -1205,13 +1205,6 @@ function FinancialAnalytics() {
     return `M${x0},${y0} A${donutR},${donutR} 0 ${large} 1 ${x1},${y1}`;
   });
 
-  const products = [
-    { name: "Resin Earrings",     rev: 1420, units: "68 units" },
-    { name: "Wedding Favor Sets", rev: 960,  units: "8 sets"   },
-    { name: "Custom Pendants",    rev: 840,  units: "22 units" },
-    { name: "Keychains",          rev: 620,  units: "31 units" },
-    { name: "Phone Grips",        rev: 440,  units: "22 units" },
-  ];
   const maxRev = Math.max(...products.map(p => p.rev));
 
   function KPIWithTrend({ label, value, delta, kind }) {
