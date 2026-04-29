@@ -1077,27 +1077,115 @@ function FinancialAnalytics() {
   const I = window.LIcons;
   const [period, setPeriod] = useState("Monthly");
 
-  const trend = [
-    { m: "Nov", v: 3800 }, { m: "Dec", v: 5200 }, { m: "Jan", v: 3400 },
-    { m: "Feb", v: 3900 }, { m: "Mar", v: 4100 }, { m: "Apr", v: 4280 },
-  ];
+  const dataByPeriod = {
+    Monthly: {
+      kpis: {
+        revenue: "$4,280", expenses: "$1,935", profit: "$2,345", margin: "54.8%",
+        deltas: { revenue: "↑ 12%", expenses: "↑ 3%", profit: "↑ 18%", margin: "↑ 2.1%" },
+        compareLabel: "vs last month",
+      },
+      trend: [
+        { m: "Nov", v: 3800 }, { m: "Dec", v: 5200 }, { m: "Jan", v: 3400 },
+        { m: "Feb", v: 3900 }, { m: "Mar", v: 4100 }, { m: "Apr", v: 4280 },
+      ],
+      trendRange: { min: 3000, max: 5400 },
+      trendSubtitle: "Last 6 months",
+      snapshotLabel: "April 2026",
+      productsSubtitle: "April 2026 — by revenue",
+      expenses: [
+        { name: "Materials",            v: 780, pct: 40, c: "#D97757" },
+        { name: "Platform Fees",        v: 425, pct: 22, c: "#A8442C" },
+        { name: "Packaging & Shipping", v: 340, pct: 18, c: "#0D9488" },
+        { name: "Electricity",          v: 190, pct: 10, c: "#F59E0B" },
+        { name: "Tools & Supplies",     v: 120, pct: 6,  c: "#EC4899" },
+        { name: "Other",                v: 80,  pct: 4,  c: "#9CA3AF" },
+      ],
+      products: [
+        { name: "Resin Earrings",     rev: 1420, units: "68 units" },
+        { name: "Wedding Favor Sets", rev: 960,  units: "8 sets"   },
+        { name: "Custom Pendants",    rev: 840,  units: "22 units" },
+        { name: "Keychains",          rev: 620,  units: "31 units" },
+        { name: "Phone Grips",        rev: 440,  units: "22 units" },
+      ],
+    },
+    Weekly: {
+      kpis: {
+        revenue: "$995", expenses: "$450", profit: "$545", margin: "54.8%",
+        deltas: { revenue: "↑ 8%", expenses: "↑ 2%", profit: "↑ 13%", margin: "↑ 1.2%" },
+        compareLabel: "vs last week",
+      },
+      trend: [
+        { m: "W12", v: 880 },  { m: "W13", v: 1210 }, { m: "W14", v: 790 },
+        { m: "W15", v: 1050 }, { m: "W16", v: 920 },  { m: "W17", v: 995 },
+      ],
+      trendRange: { min: 600, max: 1400 },
+      trendSubtitle: "Last 6 weeks",
+      snapshotLabel: "Apr 22 – Apr 28, 2026",
+      productsSubtitle: "Week of Apr 22 — by revenue",
+      expenses: [
+        { name: "Materials",            v: 181, pct: 40, c: "#D97757" },
+        { name: "Platform Fees",        v: 99,  pct: 22, c: "#A8442C" },
+        { name: "Packaging & Shipping", v: 81,  pct: 18, c: "#0D9488" },
+        { name: "Electricity",          v: 45,  pct: 10, c: "#F59E0B" },
+        { name: "Tools & Supplies",     v: 27,  pct: 6,  c: "#EC4899" },
+        { name: "Other",                v: 17,  pct: 4,  c: "#9CA3AF" },
+      ],
+      products: [
+        { name: "Resin Earrings",     rev: 330, units: "16 units" },
+        { name: "Wedding Favor Sets", rev: 220, units: "2 sets"   },
+        { name: "Custom Pendants",    rev: 195, units: "5 units"  },
+        { name: "Keychains",          rev: 145, units: "7 units"  },
+        { name: "Phone Grips",        rev: 105, units: "5 units"  },
+      ],
+    },
+    Daily: {
+      kpis: {
+        revenue: "$143", expenses: "$65", profit: "$78", margin: "54.5%",
+        deltas: { revenue: "↑ 5%", expenses: "↑ 2%", profit: "↑ 9%", margin: "↑ 1.5%" },
+        compareLabel: "vs yesterday",
+      },
+      trend: [
+        { m: "Wed", v: 130 }, { m: "Thu", v: 185 }, { m: "Fri", v: 145 },
+        { m: "Sat", v: 160 }, { m: "Sun", v: 115 }, { m: "Mon", v: 135 }, { m: "Tue", v: 143 },
+      ],
+      trendRange: { min: 80, max: 220 },
+      trendSubtitle: "Last 7 days",
+      snapshotLabel: "Apr 28, 2026",
+      productsSubtitle: "Apr 28, 2026 — by revenue",
+      expenses: [
+        { name: "Materials",            v: 26, pct: 40, c: "#D97757" },
+        { name: "Platform Fees",        v: 14, pct: 22, c: "#A8442C" },
+        { name: "Packaging & Shipping", v: 12, pct: 18, c: "#0D9488" },
+        { name: "Electricity",          v: 7,  pct: 10, c: "#F59E0B" },
+        { name: "Tools & Supplies",     v: 4,  pct: 6,  c: "#EC4899" },
+        { name: "Other",                v: 2,  pct: 4,  c: "#9CA3AF" },
+      ],
+      products: [
+        { name: "Resin Earrings",     rev: 48, units: "2 units" },
+        { name: "Wedding Favor Sets", rev: 32, units: "1 set"   },
+        { name: "Custom Pendants",    rev: 28, units: "1 unit"  },
+        { name: "Keychains",          rev: 20, units: "1 unit"  },
+        { name: "Phone Grips",        rev: 15, units: "1 unit"  },
+      ],
+    },
+  };
+
+  const data = dataByPeriod[period];
+  const trend = data.trend;
+  const expenses = data.expenses;
+  const products = data.products;
+
+  const fmtMoney = v => v >= 1000 ? `$${(v/1000).toFixed(1)}k` : `$${v}`;
 
   // Build SVG path for the line chart
   const W = 760, H = 220, PADX = 40, PADY = 24;
-  const minV = 3000, maxV = 5400;
+  const minV = data.trendRange.min, maxV = data.trendRange.max;
   const xAt = (i) => PADX + (i * (W - PADX * 2)) / (trend.length - 1);
   const yAt = (v) => PADY + (1 - (v - minV) / (maxV - minV)) * (H - PADY * 2);
   const linePath = trend.map((p, i) => (i === 0 ? "M" : "L") + xAt(i) + "," + yAt(p.v)).join(" ");
   const areaPath = linePath + ` L ${xAt(trend.length - 1)},${H - PADY} L ${xAt(0)},${H - PADY} Z`;
+  const yTicks = [0, 1, 2, 3, 4].map(i => maxV - (i * (maxV - minV)) / 4);
 
-  const expenses = [
-    { name: "Materials",            v: 780, pct: 40, c: "#D97757" },
-    { name: "Platform Fees",        v: 425, pct: 22, c: "#A8442C" },
-    { name: "Packaging & Shipping", v: 340, pct: 18, c: "#0D9488" },
-    { name: "Electricity",          v: 190, pct: 10, c: "#F59E0B" },
-    { name: "Tools & Supplies",     v: 120, pct: 6,  c: "#EC4899" },
-    { name: "Other",                v: 80,  pct: 4,  c: "#9CA3AF" },
-  ];
   const totalExp = expenses.reduce((s, e) => s + e.v, 0);
 
   // Donut math
@@ -1136,7 +1224,7 @@ function FinancialAnalytics() {
         <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>{label}</div>
         <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, marginTop: 8, letterSpacing: -0.5 }}>{value}</div>
         <div className="flex items-center gap-1 mt-2" style={{ fontSize: 12, color, fontWeight: 600 }}>
-          {ico} <span>{delta}</span> <span style={{ color: "#6B7280", fontWeight: 500 }}>vs last month</span>
+          {ico} <span>{delta}</span> <span style={{ color: "#6B7280", fontWeight: 500 }}>{data.kpis.compareLabel}</span>
         </div>
       </Card>
     );
@@ -1164,10 +1252,10 @@ function FinancialAnalytics() {
 
       {/* KPI row */}
       <div className="grid grid-cols-4 gap-5 mb-5">
-        <KPIWithTrend label="Total Revenue"  value="$4,280"  delta="↑ 12%"  kind="good" />
-        <KPIWithTrend label="Total Expenses" value="$1,935"  delta="↑ 3%"   kind="bad" />
-        <KPIWithTrend label="Net Profit"     value="$2,345"  delta="↑ 18%"  kind="good" />
-        <KPIWithTrend label="Profit Margin"  value="54.8%"   delta="↑ 2.1%" kind="good" />
+        <KPIWithTrend label="Total Revenue"  value={data.kpis.revenue}  delta={data.kpis.deltas.revenue}  kind="good" />
+        <KPIWithTrend label="Total Expenses" value={data.kpis.expenses} delta={data.kpis.deltas.expenses} kind="bad" />
+        <KPIWithTrend label="Net Profit"     value={data.kpis.profit}   delta={data.kpis.deltas.profit}   kind="good" />
+        <KPIWithTrend label="Profit Margin"  value={data.kpis.margin}   delta={data.kpis.deltas.margin}   kind="good" />
       </div>
 
       {/* Revenue trend */}
@@ -1175,7 +1263,7 @@ function FinancialAnalytics() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <div style={{ fontSize: 16, fontWeight: 600 }}>Revenue Trend</div>
-            <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>Last 6 months</div>
+            <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>{data.trendSubtitle}</div>
           </div>
           <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#374151" }}>
             <span style={{ width: 10, height: 10, background: "#D97757", borderRadius: 999 }} /> Revenue
@@ -1194,8 +1282,8 @@ function FinancialAnalytics() {
             return <line key={i} x1={PADX} x2={W - PADX} y1={y} y2={y} stroke="#F3F4F6" strokeWidth="1" />;
           })}
           {/* y-axis labels */}
-          {[5400, 4800, 4200, 3600, 3000].map((val, i) => (
-            <text key={val} x={PADX - 10} y={PADY + (i * (H - PADY*2) / 4) + 4} textAnchor="end" fontSize="10" fill="#9CA3AF">${(val/1000).toFixed(1)}k</text>
+          {yTicks.map((val, i) => (
+            <text key={i} x={PADX - 10} y={PADY + (i * (H - PADY*2) / 4) + 4} textAnchor="end" fontSize="10" fill="#9CA3AF">{fmtMoney(val)}</text>
           ))}
           <path d={areaPath} fill="url(#areaFill)" />
           <path d={linePath} fill="none" stroke="#D97757" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
@@ -1203,7 +1291,7 @@ function FinancialAnalytics() {
             <g key={p.m}>
               <circle cx={xAt(i)} cy={yAt(p.v)} r="5" fill="white" stroke="#D97757" strokeWidth="2.5" />
               <text x={xAt(i)} y={H - 6} textAnchor="middle" fontSize="11" fill="#6B7280" fontWeight="500">{p.m}</text>
-              <text x={xAt(i)} y={yAt(p.v) - 12} textAnchor="middle" fontSize="11" fill="#111827" fontWeight="600">${(p.v/1000).toFixed(1)}k</text>
+              <text x={xAt(i)} y={yAt(p.v) - 12} textAnchor="middle" fontSize="11" fill="#111827" fontWeight="600">{fmtMoney(p.v)}</text>
             </g>
           ))}
         </svg>
@@ -1214,7 +1302,7 @@ function FinancialAnalytics() {
         {/* Donut */}
         <Card>
           <div style={{ fontSize: 16, fontWeight: 600 }}>Expense Breakdown</div>
-          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2, marginBottom: 16 }}>April 2026</div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2, marginBottom: 16 }}>{data.snapshotLabel}</div>
           <div className="flex items-center gap-6">
             <svg width="200" height="200" viewBox="0 0 200 200" style={{ flexShrink: 0 }}>
               {arcs.map((d, i) => (
@@ -1242,7 +1330,7 @@ function FinancialAnalytics() {
         {/* Top products */}
         <Card>
           <div style={{ fontSize: 16, fontWeight: 600 }}>Top Products</div>
-          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2, marginBottom: 16 }}>April 2026 — by revenue</div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 2, marginBottom: 16 }}>{data.productsSubtitle}</div>
           <div className="flex flex-col gap-4">
             {products.map(p => (
               <div key={p.name}>
