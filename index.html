@@ -980,13 +980,51 @@ function Inventory() {
   const I = window.LIcons;
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All Categories");
+  const [rows, setRows] = useState(INVENTORY);
+  const [addOpen, setAddOpen] = useState(false);
+  const emptyForm = { name: "", cat: "Resin", qty: "", unit: "ml", reorder: "" };
+  const [form, setForm] = useState(emptyForm);
+  const [err, setErr] = useState("");
 
   const filtered = useMemo(() => {
-    return INVENTORY.filter(r =>
+    return rows.filter(r =>
       (cat === "All Categories" || r.cat === cat) &&
       (q.trim() === "" || r.name.toLowerCase().includes(q.toLowerCase()) || r.cat.toLowerCase().includes(q.toLowerCase()))
     );
-  }, [q, cat]);
+  }, [q, cat, rows]);
+
+  const summary = useMemo(() => ({
+    total: rows.length,
+    cats: new Set(rows.map(r => r.cat)).size,
+    low: rows.filter(r => r.status === "Low" || r.status === "Critical").length,
+    out: rows.filter(r => r.status === "Out of Stock").length,
+  }), [rows]);
+
+  const computeStatus = (qty, reorder) => {
+    if (qty <= 0) return "Out of Stock";
+    if (reorder > 0 && qty <= reorder * 0.5) return "Critical";
+    if (qty < reorder) return "Low";
+    return "In Stock";
+  };
+
+  const closeAdd = () => { setAddOpen(false); setForm(emptyForm); setErr(""); };
+
+  const handleAdd = () => {
+    const name = form.name.trim();
+    const unit = form.unit.trim();
+    const qty = Number(form.qty);
+    const reorder = Number(form.reorder);
+    if (!name) return setErr("Material name is required.");
+    if (!unit) return setErr("Unit is required.");
+    if (!Number.isFinite(qty) || qty < 0) return setErr("Quantity must be a non-negative number.");
+    if (!Number.isFinite(reorder) || reorder < 0) return setErr("Reorder point must be a non-negative number.");
+    const today = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    setRows([{ name, cat: form.cat, qty, unit, reorder, status: computeStatus(qty, reorder), date: today }, ...rows]);
+    closeAdd();
+  };
+
+  const inputStyle = { background: "#FAF9F5", border: "1px solid #E5E7EB", borderRadius: 8, padding: "10px 12px", fontSize: 14, color: "#111827", width: "100%", outline: "none" };
+  const labelStyle = { fontSize: 12, fontWeight: 600, color: "#374151", marginBottom: 6, display: "block" };
 
   return (
     <div>
@@ -996,17 +1034,17 @@ function Inventory() {
       <div className="grid grid-cols-3 gap-5 mb-5">
         <Card>
           <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Total Materials</div>
-          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#D97757", marginTop: 8 }}>8</div>
-          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Across 3 categories</div>
+          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#D97757", marginTop: 8 }}>{summary.total}</div>
+          <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Across {summary.cats} {summary.cats === 1 ? "category" : "categories"}</div>
         </Card>
         <Card>
           <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Low Stock Items</div>
-          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#F59E0B", marginTop: 8 }}>2</div>
+          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#F59E0B", marginTop: 8 }}>{summary.low}</div>
           <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Below reorder point</div>
         </Card>
         <Card>
           <div style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Out of Stock</div>
-          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#DC2626", marginTop: 8 }}>1</div>
+          <div className="num-tabular" style={{ fontSize: 28, fontWeight: 700, color: "#DC2626", marginTop: 8 }}>{summary.out}</div>
           <div style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Needs immediate reorder</div>
         </Card>
       </div>
@@ -1029,6 +1067,7 @@ function Inventory() {
           </div>
           <div className="flex-1" />
           <button
+            onClick={() => setAddOpen(true)}
             className="flex items-center gap-2 transition-colors"
             style={{ background: "#D97757", color: "white", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
             onMouseEnter={(e) => e.currentTarget.style.background = "#C25E3F"}
@@ -1066,6 +1105,78 @@ function Inventory() {
           </tbody>
         </table>
       </Card>
+
+      {/* Add Material Modal */}
+      <Modal open={addOpen} onClose={closeAdd} title="Add New Material" subtitle="Track a new item in your inventory" width={520}>
+        <div className="flex flex-col gap-4">
+          <div>
+            <label style={labelStyle}>Material Name</label>
+            <input
+              autoFocus
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="e.g., UV Resin (Amber)"
+              style={inputStyle}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label style={labelStyle}>Category</label>
+              <Select value={form.cat} onChange={(v) => setForm({ ...form, cat: v })} options={["Resin","Filament","Accessories"]} />
+            </div>
+            <div>
+              <label style={labelStyle}>Unit</label>
+              <Select value={form.unit} onChange={(v) => setForm({ ...form, unit: v })} options={["ml","g","pcs","sheets","sets"]} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label style={labelStyle}>Quantity</label>
+              <input
+                type="number"
+                min="0"
+                value={form.qty}
+                onChange={(e) => setForm({ ...form, qty: e.target.value })}
+                placeholder="0"
+                style={inputStyle}
+                className="num-tabular"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Reorder Point</label>
+              <input
+                type="number"
+                min="0"
+                value={form.reorder}
+                onChange={(e) => setForm({ ...form, reorder: e.target.value })}
+                placeholder="0"
+                style={inputStyle}
+                className="num-tabular"
+              />
+            </div>
+          </div>
+          {err && (
+            <div style={{ background: "#FEE2E2", color: "#B91C1C", border: "1px solid #FECACA", borderRadius: 8, padding: "8px 12px", fontSize: 13 }}>
+              {err}
+            </div>
+          )}
+          <div className="flex items-center justify-end gap-2" style={{ marginTop: 4 }}>
+            <button
+              onClick={closeAdd}
+              style={{ background: "white", color: "#374151", border: "1px solid #E5E7EB", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
+            >Cancel</button>
+            <button
+              onClick={handleAdd}
+              className="flex items-center gap-2 transition-colors"
+              style={{ background: "#D97757", color: "white", borderRadius: 8, padding: "10px 16px", fontSize: 14, fontWeight: 600 }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "#C25E3F"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "#D97757"}
+            >
+              <I.Plus size={16} /> Add Material
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
