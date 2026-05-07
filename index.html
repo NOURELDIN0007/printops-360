@@ -194,14 +194,16 @@
   .bento-card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
   .bento-card:hover { transform: translateY(-2px); }
 
-  /* ---------- Mobile / responsive ---------- */
+  /* ---------- Mobile / phone-only responsive ---------- */
   .mobile-nav-toggle { display: none; }
   .mobile-nav-backdrop { display: none; }
 
-  @media (max-width: 820px) {
+  /* Phones only — desktop AND iPad keep the original desktop layout */
+  @media (max-width: 640px) {
     html, body, #root { height: auto; min-height: 100%; }
+    body { overflow-x: hidden; }
 
-    /* Stack the app shell vertically */
+    /* ----- Shell: vertical stack instead of side-by-side ----- */
     #root > div.flex.h-full {
       display: block !important;
       height: auto !important;
@@ -217,10 +219,10 @@
       transition: transform .25s ease;
       z-index: 60;
       box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+      overflow-y: auto;
     }
     body.mobile-nav-open aside.flex-shrink-0 { transform: translateX(0); }
 
-    /* Backdrop behind drawer */
     .mobile-nav-backdrop {
       position: fixed;
       inset: 0;
@@ -229,12 +231,10 @@
     }
     body.mobile-nav-open .mobile-nav-backdrop { display: block; }
 
-    /* Hamburger button (only visible on mobile) */
     .mobile-nav-toggle {
       display: inline-flex !important;
       position: fixed;
-      top: 12px;
-      left: 12px;
+      top: 12px; left: 12px;
       z-index: 50;
       width: 44px; height: 44px;
       align-items: center;
@@ -247,42 +247,103 @@
       cursor: pointer;
     }
 
-    /* Main content: shrink padding, leave room for hamburger */
+    /* Main content: leave room for hamburger, shrink padding */
     main.scroll-hide {
-      padding: 64px 16px 24px !important;
+      padding: 64px 14px 24px !important;
       overflow-x: hidden !important;
-      width: 100%;
+      width: 100% !important;
+      box-sizing: border-box;
     }
 
-    /* Collapse any multi-column grid to one column */
-    main [class*="grid-cols-"] {
+    /* ----- Force every multi-column grid to a single column ----- */
+    main [class*="grid-cols-"],
+    main [style*="grid-template-columns"] {
       grid-template-columns: 1fr !important;
     }
 
-    /* Header rows that justify-between wrap nicely */
+    /* ----- Header / action rows wrap cleanly ----- */
     main .flex.items-end.justify-between,
-    main .flex.items-center.justify-between {
+    main .flex.items-center.justify-between,
+    main .flex.items-start.justify-between,
+    main .flex.items-center.gap-3,
+    main .flex.items-center.gap-4 {
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px !important;
+    }
+    /* Drop pure spacer elements that push the action button off-screen */
+    main .flex > .flex-1:empty { display: none; }
+
+    /* Anything that was a fixed pixel-width child should fill the row */
+    main [style*="width: 200px"]:not(svg),
+    main [style*="width: 220px"]:not(svg),
+    main [style*="width: 240px"]:not(svg),
+    main [style*="max-width: 360px"] {
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 1 1 100% !important;
     }
 
-    /* Tables scroll horizontally instead of overflowing the page */
+    /* Search input row inside Inventory expands to full width */
+    main .flex.items-center.gap-2.flex-1[style*="max-width: 360px"] {
+      max-width: 100% !important;
+    }
+
+    /* ----- Tables scroll horizontally inside their card ----- */
     main table {
       display: block;
       max-width: 100%;
       overflow-x: auto;
       white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
     }
+    main table th, main table td { padding: 10px 14px !important; }
 
-    /* Tame oversize inline-styled headings */
+    /* ----- Tame oversized inline font-size values ----- */
     main h1 { font-size: 20px !important; }
     main h2 { font-size: 17px !important; }
+    main [style*="font-size: 64px"] { font-size: 40px !important; letter-spacing: -1.4px !important; }
+    main [style*="font-size: 56px"] { font-size: 36px !important; letter-spacing: -1.2px !important; }
+    main [style*="font-size: 48px"] { font-size: 32px !important; }
+    main [style*="font-size: 40px"] { font-size: 28px !important; }
+    main [style*="font-size: 36px"] { font-size: 26px !important; }
+    main [style*="font-size: 32px"] { font-size: 24px !important; }
+    main [style*="font-size: 28px"] { font-size: 22px !important; }
+    main [style*="font-size: 26px"] { font-size: 20px !important; }
+    main [style*="font-size: 24px"] { font-size: 18px !important; }
 
-    /* Cards: trim built-in padding so content breathes */
+    /* ----- Trim oversized inline padding on cards ----- */
     main .card-shadow { padding: 16px !important; }
+    main [style*="padding: 28px"] { padding: 18px !important; }
+    main [style*="padding: 24px"] { padding: 16px !important; }
+    main [style*="padding: 22px"] { padding: 16px !important; }
+    main [style*="padding: 20px"] { padding: 14px !important; }
+
+    /* ----- Bar chart: skinnier bars + tighter gap so they fit ----- */
+    main .gap-6 { gap: 0.5rem !important; }
+    main .gap-5 { gap: 1rem !important; }
+    main [style*="width: 18px"] { width: 10px !important; }
+
+    /* Donut chart shrinks; legend wraps below */
+    main svg[width="200"][height="200"] {
+      width: 140px !important;
+      height: 140px !important;
+    }
 
     /* Allow flex children to actually shrink */
     main .flex > * { min-width: 0; }
+
+    /* Modal: keep it inside the viewport */
+    [style*="position: fixed"][style*="zIndex: 50"] {
+      padding: 12px !important;
+    }
+    [style*="maxWidth"][style*="maxHeight: 85vh"] {
+      max-width: 100% !important;
+      max-height: 90vh !important;
+    }
+
+    /* Long words/emails/URLs wrap instead of forcing horizontal scroll */
+    main, main * { word-break: break-word; }
+    main .num-tabular { word-break: keep-all; }
   }
 </style>
 </head>
